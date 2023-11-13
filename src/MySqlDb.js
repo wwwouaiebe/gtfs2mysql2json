@@ -1,5 +1,5 @@
 /*
-Copyright - 2021 - wwwouaiebe - Contact: https://www.ouaie.be/
+Copyright - 2023 - wwwouaiebe - Contact: https://www.ouaie.be/
 
 This  program is free software;
 you can redistribute it and/or modify it under the terms of the
@@ -22,47 +22,74 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-/* ------------------------------------------------------------------------------------------------------------------------- */
+import * as readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
+
 /**
- * A simple container to store the app configuration
+ * Coming soon...
  */
-/* ------------------------------------------------------------------------------------------------------------------------- */
 
-class Config {
-
-	/**
-	 * The path to the directory where the gtfs files are
-	 * @type {String}
-	 */
-
-	srcDir;
+class MySqlDb {
 
 	/**
-	 * The directory where the app is installed. Coming from the app parameter
-	 * @type {String}
-	 */
+     * The user name
+     * @type {string}
+     */
 
-	appDir;
+	#userName;
 
 	/**
-	 * The constructor
-	 */
+     * The user password
+     * @type {string}
+     */
 
-	constructor ( ) {
-		this.srcDir = '';
-		this.appDir = '';
+	#userPswd;
+
+	/**
+     * Ask the user name and pswd
+     */
+
+	async #askCredentials ( ) {
+		console.clear ( );
+
+		const readlineInterface = readline.createInterface ( { input, output } );
+
+		readlineInterface.write ( 'What is your name?\n' );
+		this.#userName = await readlineInterface.question ( '' );
+		readlineInterface.write ( 'What is your pswd?\n' );
+		this.#userPswd = await readlineInterface.question ( '\x1b[8;40m' );
+		readlineInterface.close ( );
+
+		console.clear ( );
+		console.info ( '\x1b[0m' );
 	}
 
+	/**
+     * The constructor
+     */
+
+	constructor ( ) {
+		Object.freeze ( this );
+
+	}
+
+	/**
+     * Start the db
+	 */
+
+	async start ( ) {
+		await this.#askCredentials ( );
+	}
 }
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * The one and only one instance of Config class. Notice that the object will be froozen directly after reading the parameters
+ * The one and only one instance of MySqlDb class.
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-const theConfig = new Config;
+const theMySqlDb = new MySqlDb;
 
-export default theConfig;
+export default theMySqlDb;
 
 /* --- End of file --------------------------------------------------------------------------------------------------------- */

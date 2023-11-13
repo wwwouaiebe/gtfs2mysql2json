@@ -1,5 +1,5 @@
 /*
-Copyright - 2021 - wwwouaiebe - Contact: https://www.ouaie.be/
+Copyright - 2023 - wwwouaiebe - Contact: https://www.ouaie.be/
 
 This  program is free software;
 you can redistribute it and/or modify it under the terms of the
@@ -24,29 +24,30 @@ Changes:
 
 import process from 'process';
 import theConfig from './Config.js';
+import GtfsLoader from './GtfsLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
-Start the app:
-- read and validate the arguments
-- set the config
-- remove the old files if any
-*/
+ * Start the app:
+ * - read and validate the arguments
+ * - set the config
+ * - remove the old files if any
+ */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class AppLoader {
 
 	/**
-	The version number
-	@type {String}
-	*/
+     * The version number
+     * @type {String}
+     */
 
 	static get #version ( ) { return 'v1.0.0'; }
 
 	/**
-	Complete theConfig object from the app parameters
-	@param {?Object} options The options for the app
-	*/
+	* Complete theConfig object from the app parameters
+	* @param {?Object} options The options for the app
+	 */
 
 	#createConfig ( options ) {
 
@@ -73,26 +74,29 @@ class AppLoader {
 			);
 			theConfig.appDir = process.argv [ 1 ];
 		}
+
+		// the config is now frozen
+		Object.freeze ( theConfig );
 	}
 
 	/**
-	The constructor
-	*/
+	 * The constructor
+	 */
 
 	constructor ( ) {
 		Object.freeze ( this );
 	}
 
 	/**
-	Load the app, searching all the needed infos to run the app correctly
-	@param {?Object} options The options for the app
-	*/
+	 * Load the app, searching all the needed infos to run the app correctly
+	 * @param {?Object} options The options for the app
+	 */
 
 	async loadApp ( options ) {
-		console.info ( '\nStarting gtfs2mysql ...' );
 
 		// config
 		this.#createConfig ( options );
+		new GtfsLoader ( ).start ( );
 	}
 
 }

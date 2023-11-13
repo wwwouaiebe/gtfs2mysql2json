@@ -22,14 +22,33 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-import AppLoader from './AppLoader.js';
+import theMySqlDb from './MySqlDb.js';
 
-/* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- *The entry point of the app
+ * Coming soon...
  */
-/* ------------------------------------------------------------------------------------------------------------------------- */
 
-new AppLoader ( ).loadApp ( );
+class GtfsLoader {
+
+	/**
+     * The constructor
+     */
+
+	constructor ( ) {
+		Object.freeze ( this );
+	}
+
+	/**
+     * Start the upload of the gtsf
+     */
+
+	async start ( ) {
+		await theMySqlDb.start ( );
+		console.info ( '\nStarting gtfs2mysql ...' );
+	}
+
+}
+
+export default GtfsLoader;
 
 /* --- End of file --------------------------------------------------------------------------------------------------------- */
