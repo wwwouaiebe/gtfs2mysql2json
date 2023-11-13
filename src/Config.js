@@ -22,81 +22,47 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-import process from 'process';
-import theConfig from './Config.js';
-
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
-Start the app:
-- read and validate the arguments
-- set the config
-- remove the old files if any
+A simple container to store the app configuration
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-class AppLoader {
+class Config {
 
 	/**
-	The version number
+	The path to the directory where the gtfs files are
 	@type {String}
 	*/
 
-	static get #version ( ) { return 'v1.0.0'; }
+	srcDir;
 
 	/**
-	Complete theConfig object from the app parameters
-	@param {?Object} options The options for the app
+	The directory where the app is installed. Coming from the app parameter
+	@type {String}
 	*/
 
-	#createConfig ( options ) {
-
-		if ( options ) {
-			theConfig.srcDir = options.srcDir;
-			theConfig.appDir = process.cwd ( ) + '/node_modules/gtfs2mysql/src';
-		}
-		else {
-			process.argv.forEach (
-				arg => {
-					const argContent = arg.split ( '=' );
-					switch ( argContent [ 0 ] ) {
-					case '--srcDir' :
-						theConfig.srcDir = argContent [ 1 ] || theConfig.srcUrl;
-						break;
-					case '--version' :
-						console.error ( `\n\t\x1b[36mVersion : ${AppLoader.#version}\x1b[0m\n` );
-						process.exit ( 0 );
-						break;
-					default :
-						break;
-					}
-				}
-			);
-			theConfig.appDir = process.argv [ 1 ];
-		}
-	}
+	appDir;
 
 	/**
 	The constructor
 	*/
 
 	constructor ( ) {
-		Object.freeze ( this );
-	}
-
-	/**
-	Load the app, searching all the needed infos to run the app correctly
-	@param {?Object} options The options for the app
-	*/
-
-	async loadApp ( options ) {
-		console.info ( '\nStarting gtfs2mysql ...' );
-
-		// config
-		this.#createConfig ( options );
+		this.srcDir = '';
+		this.appDir = '';
 	}
 
 }
 
-export default AppLoader;
+/* ------------------------------------------------------------------------------------------------------------------------- */
+/**
+The one and only one instance of Config class. Notice that the object will be froozen directly after reading the parameters
+*/
+/* ------------------------------------------------------------------------------------------------------------------------- */
+
+const theConfig = new Config;
+
+export default theConfig;
 
 /* --- End of file --------------------------------------------------------------------------------------------------------- */
