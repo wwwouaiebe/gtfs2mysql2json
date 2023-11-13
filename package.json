@@ -1,0 +1,35 @@
+{
+    "type": "module",
+    "name": "gtfs2mysql",
+    "description": "Upload a gtfs feed into a mysql db",
+    "main": "bin/index.js",
+    "bin": {
+      "sd": "./src/index.js"
+    },
+    "version": "1.0.0",
+    "keywords": [],
+    "devDependencies": {
+      "eslint": "latest",
+      "grunt": "latest",
+      "grunt-eslint": "latest",
+      "grunt-essimpledoc": "latest",
+      "grunt-wwwouaiebe-buildnumber": "latest"
+    },
+    "dependencies": {
+     },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/wwwouaiebe/gtfs2mysql.git"
+    },
+    "engines": {
+      "node": ">=18.18.2"
+    },
+    "scripts": {
+      "debug": "node node_modules/grunt/bin/grunt",
+      "gtfs2mysql" : "node ./src/index.js --srcDir./gtfs"
+    },
+    "author": "wwwouaiebe",
+    "license": "GPL-3.0",
+    "sources": "https://github.com/wwwouaiebe/gtfs2mysql",
+    "homepage": "https://github.com/wwwouaiebe/gtfs2mysql#readme"
+  }
