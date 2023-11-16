@@ -36,17 +36,33 @@ class TableLoader {
 
 	/**
      * Coming soon...
-     * @type {string}
+     * @type {number}
      */
 
-	createTableSql;
+	static get VARCHAR_LENGHT_5 ( ) { return 5; }
 
 	/**
      * Coming soon...
-     * @type {string}
+     * @type {number}
      */
 
-	fileName;
+	// eslint-disable-next-line no-magic-numbers
+	static get VARCHAR_LENGHT_64 ( ) { return 64; }
+
+	/**
+     * Coming soon...
+     * @type {number}
+     */
+
+	// eslint-disable-next-line no-magic-numbers
+	static get VARCHAR_LENGHT_256 ( ) { return 256; }
+
+	/**
+    * Coming soon...
+    * @type {Map}
+   */
+
+	fieldsMap = new Map ( );
 
 	/**
      * The constructor
@@ -58,11 +74,38 @@ class TableLoader {
 
 	/**
      * Coming soon...
-     * @param {string} data the data to load
+     * @param {string} data the data to load (= the contains of the file)
      */
 
 	#loadData ( data ) {
-		console.info ( data );
+
+		// data is splited into lines
+		let dataLines = data.split ( /\r\n|\r|\n/ );
+		let insertSqlString = '';
+		let insertSqlStringHeader = '';
+		dataLines.forEach (
+			dataLine => {
+
+				// first line contains the fields names
+				if ( '' === insertSqlStringHeader ) {
+					insertSqlStringHeader = this.getInsertSqlStringHeader ( dataLine );
+				}
+				else if ( '' !== dataLine ) {
+
+					// line is splited into fields values
+					let fieldValues = dataLine.split ( ',' );
+					insertSqlString = insertSqlStringHeader;
+					fieldValues.forEach (
+						fieldValue => insertSqlString += fieldValue + ', '
+					);
+					insertSqlString = insertSqlString.slice ( 0, insertSqlString.length - 2 );
+					insertSqlString += ');';
+					console.log ( 'insertSqlString' );
+					console.log ( insertSqlString );
+				}
+
+			}
+		);
 	}
 
 	/**
@@ -80,11 +123,27 @@ class TableLoader {
      * Coming soon...
      */
 
+	#getCreateTableSqlString ( ) {
+		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `gtfs02`.`' + this.tableName + '` (';
+		this.fieldsMap.forEach (
+			( value, key ) => createTableSqlString += '`' + key + '` ' +
+			value.type + ( ( 0 < value.length ) ? '(' + value.length + '), ' : ', ' )
+		);
+		createTableSqlString = createTableSqlString.slice ( 0, createTableSqlString.length - 2 );
+		createTableSqlString += ') DEFAULT CHARACTER SET utf8mb4  COLLATE utf8mb4_0900_ai_ci;';
+
+		return createTableSqlString;
+	}
+
+	/**
+     * Coming soon...
+     */
+
 	async load ( ) {
-		theMySqlDb.execSql ( this.createTableSql )
+		theMySqlDb.execSql ( this.#getCreateTableSqlString ( ) )
 			.then (
 				( ) => {
-					console.info ( `table created for file ${this.fileName}` );
+					console.info ( `table created for file ${this.fileName}\n\n` );
 					this.#loadData ( this.#readFile ( ) );
 				}
 			)

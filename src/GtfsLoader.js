@@ -47,9 +47,7 @@ class GtfsLoader {
 
 	async start ( ) {
 		await theMySqlDb.start ( );
-		console.info ( '\nStarting gtfs2mysql .../n/n' );
-
-		// this.#createTableFeedInfo ( );
+		console.info ( '\nStarting gtfs2mysql ...\n\n' );
 		await new FeedInfoLoader ( ).load ( );
 		theMySqlDb.end ( );
 	}

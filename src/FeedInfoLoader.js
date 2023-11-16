@@ -33,25 +33,116 @@ import TableLoader from './TableLoader.js';
 class FeedInfoLoader extends TableLoader {
 
 	/**
+     * Coming soon...
+     * @type {string}
+     */
+
+	get fileName ( ) { return 'feed_info.txt'; }
+
+	/**
+     * Coming soon...
+     * @type {string}
+     */
+
+	get tableName ( ) { return 'feed_info'; }
+
+	/**
      * The cosntructor
      */
 
 	constructor ( ) {
 		super ( );
-		this.createTableSql = 'CREATE TABLE IF NOT EXISTS `gtfs02`.`feed_info` (' +
-        '`feed_publisher_name` varchar(64),' +
-        '`feed_publisher_url` varchar(256),' +
-        '`feed_lang` varchar(5),' +
-        '`default_lang` varchar(5),' +
-        '`feed_start_date` date,' +
-        '`feed_end_date` date,' +
-        '`feed_version` varchar (64),' +
-        '`feed_contact_email` varchar(256),' +
-        '`feed_contact_url` varchar(256))' +
-        ' DEFAULT CHARACTER SET utf8mb4  COLLATE utf8mb4_0900_ai_ci;';
-
-		this.fileName = 'feed_info.txt';
+		this.fieldsMap.set (
+			'feed_publisher_name',
+			{
+				name : 'feed_publisher_name',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_64
+			}
+		);
+		this.fieldsMap.set (
+			'feed_publisher_url',
+			{
+				name : 'feed_publisher_url',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_256
+			}
+		);
+		this.fieldsMap.set (
+			'feed_lang',
+			{
+				name : 'feed_lang',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_5
+			}
+		);
+		this.fieldsMap.set (
+			'default_lang',
+			{
+				name : 'default_lang',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_5
+			}
+		);
+		this.fieldsMap.set (
+			'feed_start_date',
+			{
+				name : 'feed_start_date',
+				type : 'date',
+				length : -1
+			}
+		);
+		this.fieldsMap.set (
+			'feed_end_date',
+			{
+				name : 'feed_end_date',
+				type : 'date',
+				length : -1
+			}
+		);
+		this.fieldsMap.set (
+			'feed_version',
+			{
+				name : 'feed_version',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_64
+			}
+		);
+		this.fieldsMap.set (
+			'feed_contact_email',
+			{
+				name : 'feed_contact_email',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_256
+			}
+		);
+		this.fieldsMap.set (
+			'feed_contact_url',
+			{
+				name : 'feed_contact_url',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_256
+			}
+		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     * @param {string} dataLine
+     * @returns {string} the header of the sql
+     */
+
+	getInsertSqlStringHeader ( dataLine ) {
+		let fields = dataLine.split ( ',' );
+		let sqlStringHeader = ' INSERT INTO `gtfs02`.`feed_info` (';
+		fields.forEach (
+			field => { sqlStringHeader += '`' + field + '`, '; }
+		);
+		sqlStringHeader = sqlStringHeader.slice ( 0, sqlStringHeader.length - 2 );
+		sqlStringHeader += ') VALUES (';
+
+		return sqlStringHeader;
 	}
 }
 
