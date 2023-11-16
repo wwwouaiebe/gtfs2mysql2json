@@ -22,13 +22,54 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
+import theConfig from './Config.js';
 import theMySqlDb from './MySqlDb.js';
+import fs from 'fs';
 
 /**
  * Coming soon...
  */
 
 class GtfsLoader {
+
+	/**
+	 * Create the table feed_info
+	 */
+
+	#createTableFeedInfo ( ) {
+		const sqlCreateTable = 'CREATE TABLE IF NOT EXISTS `gtfs02`.`feed_info` (' +
+			'`feed_publisher_name` varchar(64),' +
+			'`feed_publisher_url` varchar(256),' +
+			'`feed_lang` varchar(5),' +
+			'`default_lang` varchar(5),' +
+			'`feed_start_date` date,' +
+			'`feed_end_date` date,' +
+			'`feed_version` varchar (64),' +
+			'`feed_contact_email` varchar(256),' +
+			'`feed_contact_url` varchar(256))' +
+			' DEFAULT CHARACTER SET utf8mb4  COLLATE utf8mb4_0900_ai_ci;';
+
+		theMySqlDb.execSql ( sqlCreateTable );
+	}
+
+	/**
+	 * Fill the table feed_info
+	 */
+
+	#fillTableFeedInfo ( ) {
+		fs.readFile (
+			theConfig.srcDir + '/feed_info.txt',
+			{ encoding : 'utf8' },
+			( err, data ) => {
+				if ( err ) {
+					console.info ( err );
+				}
+				else {
+					console.info ( data );
+				}
+			}
+		);
+	}
 
 	/**
      * The constructor
@@ -45,6 +86,10 @@ class GtfsLoader {
 	async start ( ) {
 		await theMySqlDb.start ( );
 		console.info ( '\nStarting gtfs2mysql ...' );
+
+		// this.#createTableFeedInfo ( );
+		this.#fillTableFeedInfo ( );
+		await theMySqlDb.end ( );
 	}
 
 }

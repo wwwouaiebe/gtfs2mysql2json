@@ -22,8 +22,12 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
+/*
 import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
+*/
+
+import mysql from 'mysql2';
 
 /**
  * Coming soon...
@@ -46,12 +50,23 @@ class MySqlDb {
 	#userPswd;
 
 	/**
+	 * The conection object
+	 * @type {Object}
+	 */
+
+	#connection;
+
+	/**
      * Ask the user name and pswd
      */
 
 	async #askCredentials ( ) {
 		console.clear ( );
 
+		this.#userName = 'gtfs02';
+		this.#userPswd = 'gtfs02';
+
+		/*
 		const readlineInterface = readline.createInterface ( { input, output } );
 
 		readlineInterface.write ( 'What is your name?\n' );
@@ -62,6 +77,8 @@ class MySqlDb {
 
 		console.clear ( );
 		console.info ( '\x1b[0m' );
+		*/
+
 	}
 
 	/**
@@ -70,7 +87,6 @@ class MySqlDb {
 
 	constructor ( ) {
 		Object.freeze ( this );
-
 	}
 
 	/**
@@ -78,7 +94,49 @@ class MySqlDb {
 	 */
 
 	async start ( ) {
+
 		await this.#askCredentials ( );
+
+		this.#connection = mysql.createConnection (
+			{
+				host : 'localhost',
+				user : this.#userName,
+				database : 'gtfs02',
+				password : this.#userPswd
+			}
+		);
+	}
+
+	/**
+	 * End the connection with the db
+	 */
+
+	async end ( ) {
+		this.#connection.end (
+			err => {
+				if ( err ) {
+					console.info ( err );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Execute an sql statment
+	 * @param {string} sqlString the sql statment to execute
+	 */
+
+	execSql ( sqlString ) {
+
+		this.#connection.query (
+			sqlString,
+			( err, results, fields ) => {
+				console.info ( err );
+				console.info ( results );
+				console.info ( fields );
+			}
+		);
+
 	}
 }
 

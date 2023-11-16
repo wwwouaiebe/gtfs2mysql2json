@@ -96,6 +96,7 @@ class AppLoader {
 
 		// config
 		this.#createConfig ( options );
+
 		new GtfsLoader ( ).start ( );
 	}
 
