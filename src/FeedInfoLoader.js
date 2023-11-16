@@ -22,38 +22,35 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-import theMySqlDb from './MySqlDb.js';
-import FeedInfoLoader from './FeedInfoLoader.js';
+import TableLoader from './TableLoader.js';
 
 /**
  * Coming soon...
  */
 
-class GtfsLoader {
+class FeedInfoLoader extends TableLoader {
 
 	/**
-     * The constructor
+     * The cosntructor
      */
 
 	constructor ( ) {
+		super ( );
+		this.createTableSql = 'CREATE TABLE IF NOT EXISTS `gtfs02`.`feed_info` (' +
+        '`feed_publisher_name` varchar(64),' +
+        '`feed_publisher_url` varchar(256),' +
+        '`feed_lang` varchar(5),' +
+        '`default_lang` varchar(5),' +
+        '`feed_start_date` date,' +
+        '`feed_end_date` date,' +
+        '`feed_version` varchar (64),' +
+        '`feed_contact_email` varchar(256),' +
+        '`feed_contact_url` varchar(256))' +
+        ' DEFAULT CHARACTER SET utf8mb4  COLLATE utf8mb4_0900_ai_ci;';
+
+		this.fileName = 'feed_info.txt';
 		Object.freeze ( this );
 	}
-
-	/**
-     * Start the upload of the gtsf
-     */
-
-	async start ( ) {
-		await theMySqlDb.start ( );
-		console.info ( '\nStarting gtfs2mysql .../n/n' );
-
-		// this.#createTableFeedInfo ( );
-		await new FeedInfoLoader ( ).load ( );
-		theMySqlDb.end ( );
-	}
-
 }
 
-export default GtfsLoader;
-
-/* --- End of file --------------------------------------------------------------------------------------------------------- */
+export default FeedInfoLoader;

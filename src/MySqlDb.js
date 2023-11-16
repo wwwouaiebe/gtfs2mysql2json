@@ -96,7 +96,6 @@ class MySqlDb {
 	async start ( ) {
 
 		await this.#askCredentials ( );
-
 		this.#connection = mysql.createConnection (
 			{
 				host : 'localhost',
@@ -111,7 +110,7 @@ class MySqlDb {
 	 * End the connection with the db
 	 */
 
-	async end ( ) {
+	end ( ) {
 		this.#connection.end (
 			err => {
 				if ( err ) {
@@ -127,16 +126,21 @@ class MySqlDb {
 	 */
 
 	execSql ( sqlString ) {
-
-		this.#connection.query (
-			sqlString,
-			( err, results, fields ) => {
-				console.info ( err );
-				console.info ( results );
-				console.info ( fields );
+		return new Promise (
+			( onOk, onError ) => {
+				this.#connection.query (
+					sqlString,
+					( err, results, fields ) => {
+						if ( err ) {
+							onError ( err );
+						}
+						else {
+							onOk ( results, fields );
+						}
+					}
+				);
 			}
 		);
-
 	}
 }
 
