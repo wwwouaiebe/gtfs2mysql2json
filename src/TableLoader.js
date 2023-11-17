@@ -65,6 +65,13 @@ class TableLoader {
 	fieldsMap = new Map ( );
 
 	/**
+	 * Coming soon
+	 * @type {Array}
+	 */
+
+	#fieldsList = [];
+
+	/**
      * The constructor
      */
 
@@ -77,35 +84,53 @@ class TableLoader {
      * @param {string} data the data to load (= the contains of the file)
      */
 
-	#loadData ( data ) {
+	async #loadData ( data ) {
 
 		// data is splited into lines
 		let dataLines = data.split ( /\r\n|\r|\n/ );
 		let insertSqlString = '';
 		let insertSqlStringHeader = '';
-		dataLines.forEach (
-			dataLine => {
+		let commitCounter = 0;
+		let dataLinesCounter = 0;
+		for ( dataLinesCounter = 0; dataLinesCounter < dataLines.length; dataLinesCounter ++ ) {
 
-				// first line contains the fields names
-				if ( '' === insertSqlStringHeader ) {
-					insertSqlStringHeader = this.#getInsertSqlStringHeader ( dataLine );
-				}
-				else if ( '' !== dataLine ) {
-
-					// line is splited into fields values
-					let fieldValues = dataLine.split ( ',' );
-					insertSqlString = insertSqlStringHeader;
-					fieldValues.forEach (
-						fieldValue => insertSqlString += fieldValue + ', '
-					);
-					insertSqlString = insertSqlString.slice ( 0, insertSqlString.length - 2 );
-					insertSqlString += ');';
-					console.log ( 'insertSqlString' );
-					console.log ( insertSqlString );
-				}
-
+			// first line contains the fields names
+			if ( '' === insertSqlStringHeader ) {
+				insertSqlStringHeader = this.#getInsertSqlStringHeader ( dataLines [ dataLinesCounter ] );
 			}
-		);
+			else if ( '' !== dataLines [ dataLinesCounter ] ) {
+
+				// line is splited into fields values
+				let fieldValues = dataLines [ dataLinesCounter ].split ( ',' );
+				let fieldCounter = 0;
+				insertSqlString = insertSqlStringHeader;
+				fieldValues.forEach (
+					fieldValue => {
+						let separator =
+							'varchar' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
+								?
+								'\''
+								:
+								'';
+
+						insertSqlString += separator + fieldValue + separator + ', ';
+						fieldCounter ++;
+					}
+				);
+				insertSqlString = insertSqlString.slice ( 0, insertSqlString.length - 2 );
+				insertSqlString += ');';
+
+				await theMySqlDb.execSql ( insertSqlString );
+
+				// commit...
+				commitCounter ++;
+				if ( theConfig.commitCounter <= commitCounter ) {
+					commitCounter = 0;
+					await theMySqlDb.execSql ( 'commit' );
+				}
+			}
+		}
+		await theMySqlDb.execSql ( 'commit' );
 	}
 
 	/**
@@ -129,7 +154,10 @@ class TableLoader {
 		let fields = dataLine.split ( ',' );
 		let sqlStringHeader = ' INSERT INTO `' + theConfig.dbName + '`.`' + this.tableName + '` (';
 		fields.forEach (
-			field => { sqlStringHeader += '`' + field + '`, '; }
+			field => {
+				sqlStringHeader += '`' + field + '`, ';
+				this.#fieldsList.push ( field );
+			}
 		);
 		sqlStringHeader = sqlStringHeader.slice ( 0, sqlStringHeader.length - 2 );
 		sqlStringHeader += ') VALUES (';

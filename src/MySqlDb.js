@@ -107,6 +107,13 @@ class MySqlDb {
 				password : this.#userPswd
 			}
 		);
+		this.#connection.connect (
+			err => {
+				if ( err ) {
+					console.error ( 'error connecting: ' + err.stack );
+				}
+			}
+		);
 	}
 
 	/**

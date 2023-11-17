@@ -46,10 +46,17 @@ class Config {
 
 	/**
 	 * The name of the db to use
-	 * @type {string}
+	 * @type {String}
 	 */
 
 	dbName;
+
+	/**
+	 * Comng soon...
+	 * @type {Number}
+	 */
+
+	commitCounter = 1000;
 
 	/**
 	 * The constructor
