@@ -114,6 +114,8 @@ class MySqlDb {
 				}
 			}
 		);
+
+		console.log ( 'MySqlDb.start ( ) ended' );
 	}
 
 	/**
@@ -136,6 +138,7 @@ class MySqlDb {
 	 */
 
 	execSql ( sqlString ) {
+		console.log ( `MySqlDb.execSql ( ) started with ${sqlString}` );
 		return new Promise (
 			( onOk, onError ) => {
 				this.#connection.query (

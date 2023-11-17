@@ -51,8 +51,8 @@ class GtfsLoader {
 		await new FeedInfoTableLoader ( ).load ( );
 
 		// await theMySqlDb.execSql ( 'commit' );
-		// await theMySqlDb.end ( );
-		console.info ( 'end' );
+		await theMySqlDb.end ( );
+		console.info ( 'GtfdLader.start () ) ended' );
 	}
 
 }

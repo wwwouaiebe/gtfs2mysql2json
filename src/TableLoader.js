@@ -86,6 +86,8 @@ class TableLoader {
 
 	async #loadData ( data ) {
 
+		console.log ( 'TableLoader.#loadData ( ) begin' );
+
 		// data is splited into lines
 		let dataLines = data.split ( /\r\n|\r|\n/ );
 		let insertSqlString = '';
@@ -131,6 +133,7 @@ class TableLoader {
 			}
 		}
 		await theMySqlDb.execSql ( 'commit' );
+		console.log ( 'TableLoader.#loadData ( ) ended' );
 	}
 
 	/**
@@ -190,10 +193,10 @@ class TableLoader {
 			.then (
 				( ) => {
 					console.info ( `table created for file ${this.fileName}\n\n` );
-					this.#loadData ( this.#readFile ( ) );
 				}
 			)
 			.catch ( err => console.info ( err ) );
+		await this.#loadData ( this.#readFile ( ) );
 	}
 }
 
