@@ -25,6 +25,7 @@ Changes:
 import theMySqlDb from './MySqlDb.js';
 import FeedInfoTableLoader from './FeedInfoTableLoader.js';
 import AgencyTableLoader from './AgencyTableLoader.js';
+import ShapesTableLoader from './ShapesTableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -51,6 +52,7 @@ class GtfsLoader {
 		await theMySqlDb.start ( );
 		await new FeedInfoTableLoader ( ).load ( );
 		await new AgencyTableLoader ( ).load ( );
+		await new ShapesTableLoader ( ).load ( );
 		await theMySqlDb.end ( );
 		console.info ( '\ngtfs2mysql ended...\n\n' );
 	}

@@ -176,7 +176,7 @@ class TableLoader {
 		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `' + theConfig.dbName + '`.`' + this.tableName + '` (';
 		this.fieldsMap.forEach (
 			( value, key ) => createTableSqlString += '`' + key + '` ' +
-			value.type + ( ( 0 < value.length ) ? '(' + value.length + '), ' : ', ' )
+			value.type + ( ( value.length ) ? '(' + value.length + '), ' : ', ' )
 		);
 		createTableSqlString = createTableSqlString.slice ( 0, createTableSqlString.length - 2 );
 		createTableSqlString += ') DEFAULT CHARACTER SET utf8mb4  COLLATE utf8mb4_0900_ai_ci;';

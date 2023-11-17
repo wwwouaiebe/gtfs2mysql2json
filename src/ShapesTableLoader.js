@@ -30,21 +30,21 @@ import TableLoader from './TableLoader.js';
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-class FeedInfoTableLoader extends TableLoader {
+class ShapesTableLoader extends TableLoader {
 
 	/**
      * Coming soon...
      * @type {string}
      */
 
-	get fileName ( ) { return 'feed_info.txt'; }
+	get fileName ( ) { return 'shapes.txt'; }
 
 	/**
      * Coming soon...
      * @type {string}
      */
 
-	get tableName ( ) { return 'feed_info'; }
+	get tableName ( ) { return 'shapes'; }
 
 	/**
      * The cosntructor
@@ -53,73 +53,41 @@ class FeedInfoTableLoader extends TableLoader {
 	constructor ( ) {
 		super ( );
 		this.fieldsMap.set (
-			'feed_publisher_name',
+			'shape_id',
 			{
-				name : 'feed_publisher_name',
+				name : 'shape_id',
 				type : 'varchar',
 				length : TableLoader.VARCHAR_LENGHT_64
 			}
 		);
 		this.fieldsMap.set (
-			'feed_publisher_url',
+			'shape_pt_lat',
 			{
-				name : 'feed_publisher_url',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_256
+				name : 'shape_pt_lat',
+				type : 'decimal',
+				length : '9,6'
 			}
 		);
 		this.fieldsMap.set (
-			'feed_lang',
+			'shape_pt_lon',
 			{
-				name : 'feed_lang',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_5
+				name : 'shape_pt_lon',
+				type : 'decimal',
+				length : '9,6'
 			}
 		);
 		this.fieldsMap.set (
-			'default_lang',
+			'shape_pt_sequence',
 			{
-				name : 'default_lang',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_5
+				name : 'shape_pt_sequence',
+				type : 'int'
 			}
 		);
 		this.fieldsMap.set (
-			'feed_start_date',
+			'shape_dist_traveled',
 			{
-				name : 'feed_start_date',
-				type : 'date'
-			}
-		);
-		this.fieldsMap.set (
-			'feed_end_date',
-			{
-				name : 'feed_end_date',
-				type : 'date'
-			}
-		);
-		this.fieldsMap.set (
-			'feed_version',
-			{
-				name : 'feed_version',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
-			}
-		);
-		this.fieldsMap.set (
-			'feed_contact_email',
-			{
-				name : 'feed_contact_email',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_256
-			}
-		);
-		this.fieldsMap.set (
-			'feed_contact_url',
-			{
-				name : 'feed_contact_url',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_256
+				name : 'shape_dist_traveled',
+				type : 'float'
 			}
 		);
 		Object.freeze ( this );
@@ -127,6 +95,6 @@ class FeedInfoTableLoader extends TableLoader {
 
 }
 
-export default FeedInfoTableLoader;
+export default ShapesTableLoader;
 
 /* --- End of file --------------------------------------------------------------------------------------------------------- */
