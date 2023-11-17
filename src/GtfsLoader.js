@@ -30,6 +30,8 @@ import CalendarDatesTableLoader from './CalendarDatesTableLoader.js';
 import CalendarTableLoader from './CalendarTableLoader.js';
 import RouteTableLoader from './RoutesTableLoader.js';
 import StopsTableLoader from './StopsTableLoader.js';
+import TripsTableLoader from './TripsTableLoader.js';
+import StopTimesTableLoader from './StopTimesTableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -54,18 +56,19 @@ class GtfsLoader {
 	async start ( ) {
 		console.info ( '\nStarting gtfs2mysql ...\n\n' );
 		await theMySqlDb.start ( );
+
 		await new AgencyTableLoader ( ).load ( );
 		await new CalendarDatesTableLoader ( ).load ( );
 		await new CalendarTableLoader ( ).load ( );
 		await new FeedInfoTableLoader ( ).load ( );
 		await new RouteTableLoader ( ).load ( );
-
-		// await new ShapesTableLoader ( ).load ( );
-		// await new StopsTableLoader ( ).load ( ); // Il y a un problème de ,
+		await new ShapesTableLoader ( ).load ( );
+		await new StopsTableLoader ( ).load ( );
+		await new StopTimesTableLoader ( ).load ( );
+		await new TripsTableLoader ( ).load ( );
 		await theMySqlDb.end ( );
 		console.info ( '\ngtfs2mysql ended...\n\n' );
 	}
-
 }
 
 export default GtfsLoader;

@@ -80,6 +80,36 @@ class TableLoader {
 	}
 
 	/**
+	 * Coming soon...
+	 * @param {String} dataLine Coming soon...
+	 */
+
+	#getFieldsValues ( dataLine ) {
+
+		// console.log ( 'dataline' );
+		// console.log ( dataLine );
+		let tmpFieldsValues = dataLine.split ( '"' );
+		let tmpDataLine = '';
+
+		// console.log ( tmpFieldsValues );
+		let tmpFieldsValuesCounter = 0;
+		for ( tmpFieldsValuesCounter = 0; tmpFieldsValuesCounter < tmpFieldsValues.length; tmpFieldsValuesCounter ++ ) {
+			if ( 0 !== ( tmpFieldsValuesCounter % 2 ) ) {
+				tmpFieldsValues [ tmpFieldsValuesCounter ] =
+					tmpFieldsValues [ tmpFieldsValuesCounter ].replaceAll ( ',', 'çççççç' );
+			}
+			tmpDataLine += tmpFieldsValues [ tmpFieldsValuesCounter ];
+		}
+		tmpFieldsValues = tmpDataLine.split ( ',' );
+
+		for ( tmpFieldsValuesCounter = 0; tmpFieldsValuesCounter < tmpFieldsValues.length; tmpFieldsValuesCounter ++ ) {
+			tmpFieldsValues [ tmpFieldsValuesCounter ] =
+				tmpFieldsValues [ tmpFieldsValuesCounter ].replaceAll ( 'çççççç', ',' );
+		}
+		return tmpFieldsValues;
+	}
+
+	/**
      * Coming soon...
       */
 
@@ -101,20 +131,19 @@ class TableLoader {
 			else if ( '' !== dataLines [ dataLinesCounter ] ) {
 
 				// line is splited into fields values
-				let fieldValues = dataLines [ dataLinesCounter ].split ( ',' );
-				console.log ( dataLines [ dataLinesCounter ] );
+				let fieldValues = this.#getFieldsValues ( dataLines [ dataLinesCounter ] );
 				let fieldCounter = 0;
 				insertSqlString = insertSqlStringHeader;
 				fieldValues.forEach (
 					fieldValue => {
-
-						// console.log ( this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ) );
 						let separator =
-							'varchar' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
-								?
-								'\''
-								:
-								'';
+						'varchar' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
+						||
+						'time' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
+							?
+							'\''
+							:
+							'';
 
 						insertSqlString += separator +
 							fieldValue.replaceAll ( '"', '' ).replaceAll ( '\'', '´' ) +
@@ -127,7 +156,7 @@ class TableLoader {
 
 				theMySqlDb.execSql ( insertSqlString )
 					.then ( )
-					.catch ( () => console.error ( `An error occurs when executing ${insertSqlString}` ) );
+					.catch ( /* () => console.error ( `An error occurs when executing ${insertSqlString}` )*/ );
 
 				// commit...
 				commitCounter ++;
