@@ -81,12 +81,12 @@ class TableLoader {
 
 	/**
      * Coming soon...
-     * @param {string} data the data to load (= the contains of the file)
-     */
+      */
 
 	async #loadData ( ) {
 
-		console.log ( 'TableLoader.#loadData ( ) begin' );
+		console.info ( `Loading of table ${this.tableName} started` );
+		await theMySqlDb.execSql ( 'TRUNCATE ' + this.tableName + ';' );
 		let dataLines = this.#readFile ( ).split ( /\r\n|\r|\n/ );
 		let insertSqlString = '';
 		let insertSqlStringHeader = '';
@@ -113,7 +113,7 @@ class TableLoader {
 								:
 								'';
 
-						insertSqlString += separator + fieldValue + separator + ', ';
+						insertSqlString += separator + fieldValue.replaceAll ( '"', '' ) + separator + ', ';
 						fieldCounter ++;
 					}
 				);
@@ -133,7 +133,7 @@ class TableLoader {
 			}
 		}
 		await theMySqlDb.execSql ( 'commit' );
-		console.log ( 'TableLoader.#loadData ( ) ended' );
+		console.info ( `Loading of table ${this.tableName} ended` );
 	}
 
 	/**

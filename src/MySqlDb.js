@@ -114,8 +114,6 @@ class MySqlDb {
 				}
 			}
 		);
-
-		console.log ( 'MySqlDb.start ( ) ended' );
 	}
 
 	/**
