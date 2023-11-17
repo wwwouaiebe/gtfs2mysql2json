@@ -23,7 +23,7 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import theMySqlDb from './MySqlDb.js';
-import FeedInfoLoader from './FeedInfoLoader.js';
+import FeedInfoTableLoader from './FeedInfoTableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -48,10 +48,11 @@ class GtfsLoader {
 	async start ( ) {
 		await theMySqlDb.start ( );
 		console.info ( '\nStarting gtfs2mysql ...\n\n' );
-		await new FeedInfoLoader ( ).load ( );
+		await new FeedInfoTableLoader ( ).load ( );
+
 		// await theMySqlDb.execSql ( 'commit' );
 		// await theMySqlDb.end ( );
-		console.log ( 'a' );
+		console.info ( 'end' );
 	}
 
 }

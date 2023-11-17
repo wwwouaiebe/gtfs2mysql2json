@@ -30,7 +30,7 @@ import TableLoader from './TableLoader.js';
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-class FeedInfoLoader extends TableLoader {
+class FeedInfoTableLoader extends TableLoader {
 
 	/**
      * Coming soon...
@@ -129,6 +129,6 @@ class FeedInfoLoader extends TableLoader {
 
 }
 
-export default FeedInfoLoader;
+export default FeedInfoTableLoader;
 
 /* --- End of file --------------------------------------------------------------------------------------------------------- */
