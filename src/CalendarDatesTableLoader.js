@@ -22,14 +22,7 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-import theMySqlDb from './MySqlDb.js';
-import FeedInfoTableLoader from './FeedInfoTableLoader.js';
-import AgencyTableLoader from './AgencyTableLoader.js';
-import ShapesTableLoader from './ShapesTableLoader.js';
-import CalendarDatesTableLoader from './CalendarDatesTableLoader.js';
-import CalendarTableLoader from './CalendarTableLoader.js';
-import RouteTableLoader from './RoutesTableLoader.js';
-import StopsTableLoader from './StopsTableLoader.js';
+import TableLoader from './TableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -37,37 +30,55 @@ import StopsTableLoader from './StopsTableLoader.js';
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-class GtfsLoader {
+class CalendarDatesTableLoader extends TableLoader {
 
 	/**
-     * The constructor
+     * Coming soon...
+     * @type {string}
+     */
+
+	get fileName ( ) { return 'calendar_dates.txt'; }
+
+	/**
+     * Coming soon...
+     * @type {string}
+     */
+
+	get tableName ( ) { return 'calendar_dates'; }
+
+	/**
+     * The cosntructor
      */
 
 	constructor ( ) {
+		super ( );
+		this.fieldsMap.set (
+			'service_id',
+			{
+				name : 'service_id',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_64
+			}
+		);
+		this.fieldsMap.set (
+			'date',
+			{
+				name : 'date',
+				type : 'date'
+			}
+		);
+		this.fieldsMap.set (
+			'exception_type',
+			{
+				name : 'exception_type',
+				type : 'integer'
+			}
+		);
 		Object.freeze ( this );
-	}
-
-	/**
-     * Start the upload of the gtsf
-     */
-
-	async start ( ) {
-		console.info ( '\nStarting gtfs2mysql ...\n\n' );
-		await theMySqlDb.start ( );
-		await new AgencyTableLoader ( ).load ( );
-		await new CalendarDatesTableLoader ( ).load ( );
-		await new CalendarTableLoader ( ).load ( );
-		await new FeedInfoTableLoader ( ).load ( );
-		await new RouteTableLoader ( ).load ( );
-
-		// await new ShapesTableLoader ( ).load ( );
-		// await new StopsTableLoader ( ).load ( ); // Il y a un problème de ,
-		await theMySqlDb.end ( );
-		console.info ( '\ngtfs2mysql ended...\n\n' );
 	}
 
 }
 
-export default GtfsLoader;
+export default CalendarDatesTableLoader;
 
 /* --- End of file --------------------------------------------------------------------------------------------------------- */

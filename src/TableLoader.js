@@ -102,10 +102,13 @@ class TableLoader {
 
 				// line is splited into fields values
 				let fieldValues = dataLines [ dataLinesCounter ].split ( ',' );
+				console.log ( dataLines [ dataLinesCounter ] );
 				let fieldCounter = 0;
 				insertSqlString = insertSqlStringHeader;
 				fieldValues.forEach (
 					fieldValue => {
+
+						// console.log ( this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ) );
 						let separator =
 							'varchar' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
 								?
@@ -113,7 +116,9 @@ class TableLoader {
 								:
 								'';
 
-						insertSqlString += separator + fieldValue.replaceAll ( '"', '' ) + separator + ', ';
+						insertSqlString += separator +
+							fieldValue.replaceAll ( '"', '' ).replaceAll ( '\'', '´' ) +
+							separator + ', ';
 						fieldCounter ++;
 					}
 				);
