@@ -53,6 +53,7 @@ class AppLoader {
 
 		if ( options ) {
 			theConfig.srcDir = options.srcDir;
+			theConfig.dbName = options.dbName;
 			theConfig.appDir = process.cwd ( ) + '/node_modules/gtfs2mysql/src';
 		}
 		else {
@@ -61,7 +62,10 @@ class AppLoader {
 					const argContent = arg.split ( '=' );
 					switch ( argContent [ 0 ] ) {
 					case '--srcDir' :
-						theConfig.srcDir = argContent [ 1 ] || theConfig.srcUrl;
+						theConfig.srcDir = argContent [ 1 ];
+						break;
+					case '--dbName' :
+						theConfig.dbName = argContent [ 1 ];
 						break;
 					case '--version' :
 						console.error ( `\n\t\x1b[36mVersion : ${AppLoader.#version}\x1b[0m\n` );

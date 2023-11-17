@@ -88,7 +88,7 @@ class TableLoader {
 
 				// first line contains the fields names
 				if ( '' === insertSqlStringHeader ) {
-					insertSqlStringHeader = this.getInsertSqlStringHeader ( dataLine );
+					insertSqlStringHeader = this.#getInsertSqlStringHeader ( dataLine );
 				}
 				else if ( '' !== dataLine ) {
 
@@ -121,10 +121,28 @@ class TableLoader {
 
 	/**
      * Coming soon...
+     * @param {string} dataLine
+     * @returns {string} the header of the sql
+     */
+
+	#getInsertSqlStringHeader ( dataLine ) {
+		let fields = dataLine.split ( ',' );
+		let sqlStringHeader = ' INSERT INTO `' + theConfig.dbName + '`.`' + this.tableName + '` (';
+		fields.forEach (
+			field => { sqlStringHeader += '`' + field + '`, '; }
+		);
+		sqlStringHeader = sqlStringHeader.slice ( 0, sqlStringHeader.length - 2 );
+		sqlStringHeader += ') VALUES (';
+
+		return sqlStringHeader;
+	}
+
+	/**
+     * Coming soon...
      */
 
 	#getCreateTableSqlString ( ) {
-		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `gtfs02`.`' + this.tableName + '` (';
+		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `' + theConfig.dbName + '`.`' + this.tableName + '` (';
 		this.fieldsMap.forEach (
 			( value, key ) => createTableSqlString += '`' + key + '` ' +
 			value.type + ( ( 0 < value.length ) ? '(' + value.length + '), ' : ', ' )

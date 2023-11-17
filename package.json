@@ -27,7 +27,7 @@
     },
     "scripts": {
         "debug": "node node_modules/grunt/bin/grunt",
-        "gtfs2mysql": "node ./src/index.js --srcDir=./gtfs"
+        "gtfs2mysql": "node ./src/index.js --srcDir=./gtfs --dbName=gtfs02"
     },
     "author": "wwwouaiebe",
     "license": "GPL-3.0",

@@ -127,23 +127,6 @@ class FeedInfoLoader extends TableLoader {
 		Object.freeze ( this );
 	}
 
-	/**
-     * Coming soon...
-     * @param {string} dataLine
-     * @returns {string} the header of the sql
-     */
-
-	getInsertSqlStringHeader ( dataLine ) {
-		let fields = dataLine.split ( ',' );
-		let sqlStringHeader = ' INSERT INTO `gtfs02`.`feed_info` (';
-		fields.forEach (
-			field => { sqlStringHeader += '`' + field + '`, '; }
-		);
-		sqlStringHeader = sqlStringHeader.slice ( 0, sqlStringHeader.length - 2 );
-		sqlStringHeader += ') VALUES (';
-
-		return sqlStringHeader;
-	}
 }
 
 export default FeedInfoLoader;

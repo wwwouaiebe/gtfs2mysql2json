@@ -1,5 +1,5 @@
 /*
-Copyright - 2021 - wwwouaiebe - Contact: https://www.ouaie.be/
+Copyright - 2023 - wwwouaiebe - Contact: https://www.ouaie.be/
 
 This  program is free software;
 you can redistribute it and/or modify it under the terms of the
@@ -45,12 +45,20 @@ class Config {
 	appDir;
 
 	/**
+	 * The name of the db to use
+	 * @type {string}
+	 */
+
+	dbName;
+
+	/**
 	 * The constructor
 	 */
 
 	constructor ( ) {
 		this.srcDir = '';
 		this.appDir = '';
+		this.dbName = '';
 	}
 
 }

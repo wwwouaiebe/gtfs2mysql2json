@@ -28,6 +28,7 @@ import { stdin as input, stdout as output } from 'node:process';
 */
 
 import mysql from 'mysql2';
+import theConfig from './Config.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -102,7 +103,7 @@ class MySqlDb {
 			{
 				host : 'localhost',
 				user : this.#userName,
-				database : 'gtfs02',
+				database : theConfig.dbName,
 				password : this.#userPswd
 			}
 		);
