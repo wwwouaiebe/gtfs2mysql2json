@@ -84,12 +84,10 @@ class TableLoader {
      * @param {string} data the data to load (= the contains of the file)
      */
 
-	async #loadData ( data ) {
+	async #loadData ( ) {
 
 		console.log ( 'TableLoader.#loadData ( ) begin' );
-
-		// data is splited into lines
-		let dataLines = data.split ( /\r\n|\r|\n/ );
+		let dataLines = this.#readFile ( ).split ( /\r\n|\r|\n/ );
 		let insertSqlString = '';
 		let insertSqlStringHeader = '';
 		let commitCounter = 0;
@@ -122,7 +120,9 @@ class TableLoader {
 				insertSqlString = insertSqlString.slice ( 0, insertSqlString.length - 2 );
 				insertSqlString += ');';
 
-				await theMySqlDb.execSql ( insertSqlString );
+				theMySqlDb.execSql ( insertSqlString )
+					.then ( )
+					.catch ( () => console.error ( `An error occurs when executing ${insertSqlString}` ) );
 
 				// commit...
 				commitCounter ++;
@@ -189,14 +189,8 @@ class TableLoader {
      */
 
 	async load ( ) {
-		theMySqlDb.execSql ( this.#getCreateTableSqlString ( ) )
-			.then (
-				( ) => {
-					console.info ( `table created for file ${this.fileName}\n\n` );
-				}
-			)
-			.catch ( err => console.info ( err ) );
-		await this.#loadData ( this.#readFile ( ) );
+		await theMySqlDb.execSql ( this.#getCreateTableSqlString ( ) );
+		await this.#loadData ( );
 	}
 }
 

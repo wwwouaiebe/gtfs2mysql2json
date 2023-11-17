@@ -46,13 +46,11 @@ class GtfsLoader {
      */
 
 	async start ( ) {
-		await theMySqlDb.start ( );
 		console.info ( '\nStarting gtfs2mysql ...\n\n' );
+		await theMySqlDb.start ( );
 		await new FeedInfoTableLoader ( ).load ( );
-
-		// await theMySqlDb.execSql ( 'commit' );
 		await theMySqlDb.end ( );
-		console.info ( 'GtfdLader.start () ) ended' );
+		console.info ( '\ngtfs2mysql ended...\n\n' );
 	}
 
 }
