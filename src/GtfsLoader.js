@@ -32,6 +32,7 @@ import RouteTableLoader from './RoutesTableLoader.js';
 import StopsTableLoader from './StopsTableLoader.js';
 import TripsTableLoader from './TripsTableLoader.js';
 import StopTimesTableLoader from './StopTimesTableLoader.js';
+import TranslationsTableLoader from './TranslationsTableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -65,6 +66,7 @@ class GtfsLoader {
 		await new ShapesTableLoader ( ).load ( );
 		await new StopsTableLoader ( ).load ( );
 		await new StopTimesTableLoader ( ).load ( );
+		await new TranslationsTableLoader ( ).load ( );
 		await new TripsTableLoader ( ).load ( );
 		await theMySqlDb.end ( );
 		console.info ( '\ngtfs2mysql ended...\n\n' );

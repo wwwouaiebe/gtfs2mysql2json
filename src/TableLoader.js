@@ -223,6 +223,14 @@ class TableLoader {
      */
 
 	async load ( ) {
+		try {
+			fs.accessSync ( theConfig.srcDir + '/' + this.fileName );
+		}
+		catch ( err ) {
+			console.error ( `File ${this.fileName} not found` );
+			return;
+		}
+
 		await theMySqlDb.execSql ( this.#getCreateTableSqlString ( ) );
 		await this.#loadData ( );
 	}

@@ -22,10 +22,8 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-/*
 import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-*/
 
 import mysql from 'mysql2';
 import theConfig from './Config.js';
@@ -66,10 +64,6 @@ class MySqlDb {
 	async #askCredentials ( ) {
 		console.clear ( );
 
-		this.#userName = 'gtfs02';
-		this.#userPswd = 'gtfs02';
-
-		/*
 		const readlineInterface = readline.createInterface ( { input, output } );
 
 		readlineInterface.write ( 'What is your name?\n' );
@@ -80,8 +74,6 @@ class MySqlDb {
 
 		console.clear ( );
 		console.info ( '\x1b[0m' );
-		*/
-
 	}
 
 	/**

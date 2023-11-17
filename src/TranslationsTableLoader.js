@@ -30,21 +30,21 @@ import TableLoader from './TableLoader.js';
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-class RouteTableLoader extends TableLoader {
+class TranslationsTableLoader extends TableLoader {
 
 	/**
      * Coming soon...
      * @type {string}
      */
 
-	get fileName ( ) { return 'routes.txt'; }
+	get fileName ( ) { return 'translations.txt'; }
 
 	/**
      * Coming soon...
      * @type {string}
      */
 
-	get tableName ( ) { return 'routes'; }
+	get tableName ( ) { return 'translations'; }
 
 	/**
      * The cosntructor
@@ -52,96 +52,80 @@ class RouteTableLoader extends TableLoader {
 
 	constructor ( ) {
 		super ( );
+
+		// trans_id is not a standard field, but used by stib
 		this.fieldsMap.set (
-			'route_id',
+			'trans_id',
 			{
-				name : 'route_id',
+				name : 'trans_id',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_64
+			}
+		);
+
+		// lang is not a standard field, but used by stib
+		this.fieldsMap.set (
+			'lang',
+			{
+				name : 'lang',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_5
+			}
+		);
+		this.fieldsMap.set (
+			'table_name',
+			{
+				name : 'table_name',
 				type : 'varchar',
 				length : TableLoader.VARCHAR_LENGHT_64
 			}
 		);
 		this.fieldsMap.set (
-			'agency_id',
+			'field_name',
 			{
-				name : 'agency_id',
+				name : 'field_name',
 				type : 'varchar',
 				length : TableLoader.VARCHAR_LENGHT_64
 			}
 		);
 		this.fieldsMap.set (
-			'route_short_name',
+			'language',
 			{
-				name : 'route_short_name',
+				name : 'language',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_5
 			}
 		);
 		this.fieldsMap.set (
-			'route_long_name',
+			'translation',
 			{
-				name : 'route_long_name',
+				name : 'translation',
 				type : 'varchar',
 				length : TableLoader.VARCHAR_LENGHT_256
 			}
 		);
 		this.fieldsMap.set (
-			'route_desc',
+			'record_id',
 			{
-				name : 'route_desc',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_256
-			}
-		);
-		this.fieldsMap.set (
-			'route_type',
-			{
-				name : 'route_type',
-				type : 'integer'
-			}
-		);
-		this.fieldsMap.set (
-			'route_url',
-			{
-				name : 'route_url',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_256
-			}
-		);
-		this.fieldsMap.set (
-			'route_color',
-			{
-				name : 'route_color',
+				name : 'record_id',
 				type : 'varchar',
 				length : TableLoader.VARCHAR_LENGHT_64
 			}
 		);
 		this.fieldsMap.set (
-			'route_text_color',
+			'record_sub_id',
 			{
-				name : 'route_text_color',
+				name : 'record_sub_id',
 				type : 'varchar',
 				length : TableLoader.VARCHAR_LENGHT_64
 			}
 		);
 		this.fieldsMap.set (
-			'route_sort_order',
+			'field_value',
 			{
-				name : 'route_sort_order',
-				type : 'integer'
-			}
-		);
-		this.fieldsMap.set (
-			'continuous_pickup',
-			{
-				name : 'continuous_pickup',
-				type : 'integer'
-			}
-		);
-		this.fieldsMap.set (
-			'continuous_drop_off',
-			{
-				name : 'continuous_drop_off',
-				type : 'integer'
+				name : 'field_value',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_256
 			}
 		);
 		Object.freeze ( this );
@@ -149,6 +133,6 @@ class RouteTableLoader extends TableLoader {
 
 }
 
-export default RouteTableLoader;
+export default TranslationsTableLoader;
 
 /* --- End of file --------------------------------------------------------------------------------------------------------- */
