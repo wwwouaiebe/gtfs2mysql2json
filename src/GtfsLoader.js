@@ -68,6 +68,7 @@ class GtfsLoader {
 		await new StopTimesTableLoader ( ).load ( );
 		await new TranslationsTableLoader ( ).load ( );
 		await new TripsTableLoader ( ).load ( );
+		
 		await theMySqlDb.end ( );
 		console.info ( '\ngtfs2mysql ended...\n\n' );
 	}
