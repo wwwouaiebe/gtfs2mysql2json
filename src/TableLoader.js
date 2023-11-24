@@ -200,8 +200,8 @@ class TableLoader {
 				// commit...
 				commitCounter ++;
 
-				console.info ( `${dataLinesCounter} records loaded.` );
 				if ( theConfig.commitCounter <= commitCounter ) {
+					console.info ( `${dataLinesCounter} records loaded.` );
 					commitCounter = 0;
 					await theMySqlDb.execSql ( 'commit' );
 				}
