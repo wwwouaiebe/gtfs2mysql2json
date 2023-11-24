@@ -57,7 +57,7 @@ class Config {
 	 */
 
 	// eslint-disable-next-line no-magic-numbers
-	commitCounter = 1000;
+	commitCounter = 100000;
 
 	/**
 	 * The constructor

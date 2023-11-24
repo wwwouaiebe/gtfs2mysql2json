@@ -23,6 +23,7 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
+import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -141,6 +142,19 @@ class StopTimesTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+		await theMySqlDb.execSql (
+			'create index ix_stop_id on stop_times (stop_id);'
+		);
+		await theMySqlDb.execSql (
+			'create index ix_stop_id_stop_sequence on stop_times (stop_id, stop_sequence);'
+		);
 	}
 
 }

@@ -37,13 +37,6 @@ class FeedInfoTableLoader extends TableLoader {
      * @type {string}
      */
 
-	get fileName ( ) { return 'feed_info.txt'; }
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
 	get tableName ( ) { return 'feed_info'; }
 
 	/**
@@ -123,6 +116,14 @@ class FeedInfoTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+
 	}
 
 }

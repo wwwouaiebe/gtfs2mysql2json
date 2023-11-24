@@ -37,13 +37,6 @@ class TranslationsTableLoader extends TableLoader {
      * @type {string}
      */
 
-	get fileName ( ) { return 'translations.txt'; }
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
 	get tableName ( ) { return 'translations'; }
 
 	/**
@@ -129,6 +122,14 @@ class TranslationsTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+
 	}
 
 }

@@ -23,6 +23,7 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
+import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -31,13 +32,6 @@ import TableLoader from './TableLoader.js';
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class CalendarTableLoader extends TableLoader {
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
-	get fileName ( ) { return 'calendar.txt'; }
 
 	/**
      * Coming soon...
@@ -124,6 +118,16 @@ class CalendarTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+		await theMySqlDb.execSql (
+			'create index ix_service_id on calendar ( service_id );'
+		);
 	}
 
 }

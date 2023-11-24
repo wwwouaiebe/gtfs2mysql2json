@@ -37,13 +37,6 @@ class AgencyTableLoader extends TableLoader {
      * @type {string}
      */
 
-	get fileName ( ) { return 'agency.txt'; }
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
 	get tableName ( ) { return 'agency'; }
 
 	/**
@@ -55,7 +48,7 @@ class AgencyTableLoader extends TableLoader {
 		this.fieldsMap.set (
 			'agency_id',
 			{
-				name : 'feed_publisher_name',
+				name : 'agency_id',
 				type : 'varchar',
 				length : TableLoader.VARCHAR_LENGHT_64
 			}
@@ -117,6 +110,13 @@ class AgencyTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
 	}
 
 }

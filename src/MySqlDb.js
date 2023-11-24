@@ -112,8 +112,8 @@ class MySqlDb {
 	 * End the connection with the db
 	 */
 
-	end ( ) {
-		this.#connection.end (
+	async end ( ) {
+		await this.#connection.end (
 			err => {
 				if ( err ) {
 					console.info ( err );

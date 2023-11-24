@@ -27,8 +27,9 @@
     },
     "scripts": {
         "debug": "node node_modules/grunt/bin/grunt",
-        "gtfs2mysql-tec": "node ./src/index.js --srcDir=./gtfs/tec --dbName=gtfs_tec",
-        "gtfs2mysql-stib": "node ./src/index.js --srcDir=./gtfs/stib --dbName=gtfs_stib"
+        "gtfs2mysql-delijn": "node ./src/index.js --srcDir=./gtfs/delijn --dbName=gtfs_delijn",
+        "gtfs2mysql-stib": "node ./src/index.js --srcDir=./gtfs/stib --dbName=gtfs_stib",
+        "gtfs2mysql-tec": "node ./src/index.js --srcDir=./gtfs/tec --dbName=gtfs_tec"
     },
     "author": "wwwouaiebe",
     "license": "GPL-3.0",

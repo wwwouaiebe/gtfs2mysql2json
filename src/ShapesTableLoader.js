@@ -23,6 +23,7 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
+import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -31,13 +32,6 @@ import TableLoader from './TableLoader.js';
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class ShapesTableLoader extends TableLoader {
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
-	get fileName ( ) { return 'shapes.txt'; }
 
 	/**
      * Coming soon...
@@ -91,6 +85,19 @@ class ShapesTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+		await theMySqlDb.execSql (
+			'create index ix_shape_id on shapes (shape_id);'
+		);
+		await theMySqlDb.execSql (
+			'create index ix_shape_id_shape_pt_sequence on shapes (shape_id, shape_pt_sequence);'
+		);
 	}
 
 }

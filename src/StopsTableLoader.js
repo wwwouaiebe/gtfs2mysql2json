@@ -23,6 +23,7 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
+import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -31,13 +32,6 @@ import TableLoader from './TableLoader.js';
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class StopsTableLoader extends TableLoader {
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
-	get fileName ( ) { return 'stops.txt'; }
 
 	/**
      * Coming soon...
@@ -164,6 +158,16 @@ class StopsTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+		await theMySqlDb.execSql (
+			'create index ix_stop_id on stops (stop_id);'
+		);
 	}
 
 }

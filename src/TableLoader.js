@@ -85,9 +85,6 @@ class TableLoader {
 	 */
 
 	#getFieldsValues ( dataLine ) {
-
-		// console.log ( 'dataline' );
-		// console.log ( dataLine );
 		let tmpFieldsValues = dataLine.split ( '"' );
 		let tmpDataLine = '';
 
@@ -111,13 +108,54 @@ class TableLoader {
 
 	/**
      * Coming soon...
+	 * @param {String} fileName Comming soon...
+     */
+
+	#readFile ( fileName ) {
+		return fs.readFileSync (
+			theConfig.srcDir + '/' + fileName,
+			'utf8'
+		);
+	}
+
+	/**
+     * Coming soon...
+     * @param {string} dataLine
+     * @returns {string} the header of the sql
+     */
+
+	#getInsertSqlStringHeader ( dataLine ) {
+		let fields = dataLine.split ( ',' );
+		let sqlStringHeader = ' INSERT INTO `' + theConfig.dbName + '`.`' + this.tableName + '` (';
+		fields.forEach (
+			field => {
+				sqlStringHeader += '`' + field + '`, ';
+				this.#fieldsList.push ( field );
+			}
+		);
+		sqlStringHeader = sqlStringHeader.slice ( 0, sqlStringHeader.length - 2 );
+		sqlStringHeader += ') VALUES (';
+
+		return sqlStringHeader;
+	}
+
+	/**
+     * Coming soon...
+	 * @param {String} fileName Comming soon...
       */
 
-	async #loadData ( ) {
+	async loadData ( fileName ) {
 
-		console.info ( `Loading of table ${this.tableName} started` );
-		await theMySqlDb.execSql ( 'TRUNCATE ' + this.tableName + ';' );
-		let dataLines = this.#readFile ( ).split ( /\r\n|\r|\n/ );
+		try {
+			fs.accessSync ( theConfig.srcDir + '/' + fileName );
+		}
+		catch ( err ) {
+			console.error ( `File ${fileName} not found` );
+			return;
+		}
+
+		console.info ( `Loading of file ${fileName} started` );
+		let dataLines = this.#readFile ( fileName ).split ( /\r\n|\r|\n/ );
 		let insertSqlString = '';
 		let insertSqlStringHeader = '';
 		let commitCounter = 0;
@@ -126,7 +164,8 @@ class TableLoader {
 
 			// first line contains the fields names
 			if ( '' === insertSqlStringHeader ) {
-				insertSqlStringHeader = this.#getInsertSqlStringHeader ( dataLines [ dataLinesCounter ] );
+				insertSqlStringHeader =
+					this.#getInsertSqlStringHeader ( dataLines [ dataLinesCounter ].replaceAll ( '"', '' ) );
 			}
 			else if ( '' !== dataLines [ dataLinesCounter ] ) {
 
@@ -160,6 +199,8 @@ class TableLoader {
 
 				// commit...
 				commitCounter ++;
+
+				console.info ( `${dataLinesCounter} records loaded.` );
 				if ( theConfig.commitCounter <= commitCounter ) {
 					commitCounter = 0;
 					await theMySqlDb.execSql ( 'commit' );
@@ -167,46 +208,19 @@ class TableLoader {
 			}
 		}
 		await theMySqlDb.execSql ( 'commit' );
-		console.info ( `Loading of table ${this.tableName} ended` );
+
+		console.info ( `Loading of file ${fileName}. ended ${dataLinesCounter} records loaded.` );
 	}
 
 	/**
      * Coming soon...
      */
 
-	#readFile ( ) {
-		return fs.readFileSync (
-			theConfig.srcDir + '/' + this.fileName,
-			'utf8'
+	async createTable ( ) {
+
+		await theMySqlDb.execSql (
+			'DROP TABLE if EXISTS ' + this.tableName + ';'
 		);
-	}
-
-	/**
-     * Coming soon...
-     * @param {string} dataLine
-     * @returns {string} the header of the sql
-     */
-
-	#getInsertSqlStringHeader ( dataLine ) {
-		let fields = dataLine.split ( ',' );
-		let sqlStringHeader = ' INSERT INTO `' + theConfig.dbName + '`.`' + this.tableName + '` (';
-		fields.forEach (
-			field => {
-				sqlStringHeader += '`' + field + '`, ';
-				this.#fieldsList.push ( field );
-			}
-		);
-		sqlStringHeader = sqlStringHeader.slice ( 0, sqlStringHeader.length - 2 );
-		sqlStringHeader += ') VALUES (';
-
-		return sqlStringHeader;
-	}
-
-	/**
-     * Coming soon...
-     */
-
-	#getCreateTableSqlString ( ) {
 		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `' + theConfig.dbName + '`.`' + this.tableName + '` (';
 		this.fieldsMap.forEach (
 			( value, key ) => createTableSqlString += '`' + key + '` ' +
@@ -215,24 +229,8 @@ class TableLoader {
 		createTableSqlString = createTableSqlString.slice ( 0, createTableSqlString.length - 2 );
 		createTableSqlString += ') DEFAULT CHARACTER SET utf8mb4  COLLATE utf8mb4_0900_ai_ci;';
 
-		return createTableSqlString;
-	}
-
-	/**
-     * Coming soon...
-     */
-
-	async load ( ) {
-		try {
-			fs.accessSync ( theConfig.srcDir + '/' + this.fileName );
-		}
-		catch ( err ) {
-			console.error ( `File ${this.fileName} not found` );
-			return;
-		}
-
-		await theMySqlDb.execSql ( this.#getCreateTableSqlString ( ) );
-		await this.#loadData ( );
+		await theMySqlDb.execSql ( createTableSqlString );
+		await this.createIndexes ( );
 	}
 }
 

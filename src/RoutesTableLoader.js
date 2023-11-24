@@ -23,6 +23,7 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
+import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -31,13 +32,6 @@ import TableLoader from './TableLoader.js';
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class RouteTableLoader extends TableLoader {
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
-	get fileName ( ) { return 'routes.txt'; }
 
 	/**
      * Coming soon...
@@ -145,6 +139,19 @@ class RouteTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+		await theMySqlDb.execSql (
+			'create index ix_agency_id on routes (agency_id);'
+		);
+		await theMySqlDb.execSql (
+			'create index ix_route_id on routes (route_id);'
+		);
 	}
 
 }

@@ -23,6 +23,7 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
+import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -31,13 +32,6 @@ import TableLoader from './TableLoader.js';
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class TripsTableLoader extends TableLoader {
-
-	/**
-     * Coming soon...
-     * @type {string}
-     */
-
-	get fileName ( ) { return 'trips.txt'; }
 
 	/**
      * Coming soon...
@@ -130,6 +124,26 @@ class TripsTableLoader extends TableLoader {
 			}
 		);
 		Object.freeze ( this );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async createIndexes ( ) {
+		await theMySqlDb.execSql (
+			'create index ix_route_id on trips ( route_id );'
+		);
+		await theMySqlDb.execSql (
+			'create index ix_service_id on trips ( service_id );'
+		);
+		await theMySqlDb.execSql (
+			'create index ix_shape_id on trips ( shape_id );'
+		);
+		await theMySqlDb.execSql (
+			'create index ix_trip_id on trips ( trip_id );'
+		);
+
 	}
 
 }
