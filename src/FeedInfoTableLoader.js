@@ -66,7 +66,7 @@ class FeedInfoTableLoader extends TableLoader {
 			{
 				name : 'feed_lang',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_5
+				length : TableLoader.VARCHAR_LENGHT_10
 			}
 		);
 		this.fieldsMap.set (
@@ -74,7 +74,7 @@ class FeedInfoTableLoader extends TableLoader {
 			{
 				name : 'default_lang',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_5
+				length : TableLoader.VARCHAR_LENGHT_10
 			}
 		);
 		this.fieldsMap.set (

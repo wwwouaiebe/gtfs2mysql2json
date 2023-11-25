@@ -23,7 +23,6 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
-import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -47,11 +46,21 @@ class CalendarDatesTableLoader extends TableLoader {
 	constructor ( ) {
 		super ( );
 		this.fieldsMap.set (
+			'service_pk',
+			{
+				name : 'service_pk',
+				type : 'int',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
 			'service_id',
 			{
 				name : 'service_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				index : true,
+				collate : 'utf8mb4_0900_as_cs'
 			}
 		);
 		this.fieldsMap.set (
@@ -76,9 +85,6 @@ class CalendarDatesTableLoader extends TableLoader {
      */
 
 	async createIndexes ( ) {
-		await theMySqlDb.execSql (
-			'create index ix_service_id on calendar_dates ( service_id );'
-		);
 	}
 
 }

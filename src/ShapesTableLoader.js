@@ -47,11 +47,21 @@ class ShapesTableLoader extends TableLoader {
 	constructor ( ) {
 		super ( );
 		this.fieldsMap.set (
+			'shape_pk',
+			{
+				name : 'shape_pk',
+				type : 'int',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
 			'shape_id',
 			{
 				name : 'shape_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				index : true,
+				collate : 'utf8mb4_0900_as_cs'
 			}
 		);
 		this.fieldsMap.set (
@@ -93,10 +103,7 @@ class ShapesTableLoader extends TableLoader {
 
 	async createIndexes ( ) {
 		await theMySqlDb.execSql (
-			'create index ix_shape_id on shapes (shape_id);'
-		);
-		await theMySqlDb.execSql (
-			'create index ix_shape_id_shape_pt_sequence on shapes (shape_id, shape_pt_sequence);'
+			'create index ix_shape_pk_shape_pt_sequence on shapes (shape_pk, shape_pt_sequence);'
 		);
 	}
 

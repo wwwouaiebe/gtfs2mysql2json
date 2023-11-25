@@ -34,6 +34,7 @@ import TripsTableLoader from './TripsTableLoader.js';
 import StopTimesTableLoader from './StopTimesTableLoader.js';
 import TranslationsTableLoader from './TranslationsTableLoader.js';
 import theConfig from './Config.js';
+import process from 'process';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -57,38 +58,35 @@ class GtfsLoader {
 
 	async #createTablesPk ( ) {
 
-		await theMySqlDb.execSql (
-			'DROP TABLE if EXISTS agencies_pk;'
-		);
-		await theMySqlDb.execSql (
-			'CREATE TABLE agencies_pk ' +
-			'( agency_pk int NOT NULL AUTO_INCREMENT, agency_id varchar(64) NOT NULL, PRIMARY KEY (agency_pk) );'
-		);
-		await theMySqlDb.execSql (
-			'create index ix_agency_id on agencies_pk (agency_id ); '
-		);
+		console.info ( '\nCreation of tables for PK started...\n\n' );
 
 		await theMySqlDb.execSql (
-			'DROP TABLE if EXISTS routes_pk;'
+			'DROP TABLE if EXISTS services_pk;'
 		);
 		await theMySqlDb.execSql (
-			'CREATE TABLE routes_pk ' +
-			'( route_pk int NOT NULL AUTO_INCREMENT, route_id varchar(64) NOT NULL, PRIMARY KEY (route_pk) );'
+			'CREATE TABLE services_pk ( ' +
+				'service_pk int NOT NULL AUTO_INCREMENT, ' +
+				'service_id varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs NOT NULL , ' +
+				'PRIMARY KEY (service_pk) );'
 		);
 		await theMySqlDb.execSql (
-			'create index ix_route_id on routes_pk (route_id );'
+			'create index ix_service_id on services_pk (service_id ); '
 		);
 
 		await theMySqlDb.execSql (
 			'DROP TABLE if EXISTS shapes_pk;'
 		);
 		await theMySqlDb.execSql (
-			'CREATE TABLE shapes_pk ' +
-			'( shape_pk int NOT NULL AUTO_INCREMENT, shape_id varchar(64) NOT NULL, PRIMARY KEY (shape_pk) );'
+			'CREATE TABLE shapes_pk ( ' +
+			'shape_pk int NOT NULL AUTO_INCREMENT, ' +
+			'shape_id varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_cs  NOT NULL, ' +
+			'PRIMARY KEY (shape_pk) );'
 		);
 		await theMySqlDb.execSql (
 			'create index ix_shape_id on shapes_pk (shape_id ); '
 		);
+
+		console.info ( '\nCreation of tables for PK ended...\n\n' );
 	}
 
 	/**
@@ -96,18 +94,6 @@ class GtfsLoader {
      */
 
 	async #createViews ( ) {
-
-		await theMySqlDb.execSql (
-			'create view routes_for_agency as ' +
-			'select ' +
-			'agencies_pk.agency_pk as agencyPk, routes_pk.route_pk as routePk, routes.route_short_name as routeShortName, ' +
-			'routes.route_long_name as routeLongName ' +
-			'FROM ' +
-			'agencies_pk ' +
-			'inner join routes on agencies_pk.agency_id = routes.agency_id ' +
-			'inner join routes_pk on routes.route_id = routes_pk.route_id ' +
-			'order by LPAD ( routes.route_short_name, 10, \' \');'
-		);
 
 		if ( 'gtfs_delijn' === theConfig.dbName ) {
 			await theMySqlDb.execSql (
@@ -132,29 +118,85 @@ class GtfsLoader {
 			await theMySqlDb.execSql (
 				'create view shapes_for_route as ' +
 				'select min(start_date) as minStartDate, max(end_date) as maxEndDate, ' +
-				'route_pk as routePk, shape_pk as shapePk,' +
-				'shape_id as shapeId ' +
-				'from ' +
-				'( ' +
-				'select distinct calendar.start_date, calendar.end_date, ' +
-				'routes_pk.route_pk, shapes_pk.shape_pk, shapes_pk.shape_id ' +
-				'FROM routes_pk ' +
-				'inner join routes on routes_pk.route_id = routes.route_id ' +
-				'inner join trips on routes.route_id = trips.route_id ' +
-				'inner join calendar on trips.service_id = calendar.service_id ' +
-				' inner join shapes_pk on trips.shape_id = shapes_pk.shape_id ' +
+				'route_pk as routePk, shape_pk as shapePk ' +
+				'from ( ' +
+					'select distinct calendar.start_date, calendar.end_date, ' +
+					'routes.route_pk, trips.shape_pk ' +
+					'FROM ' +
+					'routes ' +
+					'inner join trips on routes.route_pk = trips.route_pk ' +
+					'inner join calendar on trips.service_pk = calendar.service_pk ' +
 				') t ' +
-				'group by shapeId order by minStartDate, maxEndDate;'
+				' group by shapePk order by minStartDate, maxEndDate;'
 			);
 		}
+	}
 
+	/**
+     * Coming soon...
+     */
+
+	async #loadPk ( ) {
+		console.info ( '\nLoading of PK started...\n\n' );
+
+		// routes table
+		console.info ( '\nfor routes...\n\n' );
 		await theMySqlDb.execSql (
-			'create view lat_lon_for_shape as ' +
-			'select shape_pk as shapePk, shapes.shape_pt_lat as lat, shapes.shape_pt_lon as lon, ' +
-			'shapes.shape_id as shapeId, shapes.shape_pt_sequence as sequence ' +
-			'from shapes_pk inner join shapes on shapes_pk.shape_id = shapes.shape_id ' +
-			'order by shapes.shape_id, shapes.shape_pt_sequence;'
+			'update routes set routes.agency_pk = ' +
+			'( select agency.agency_pk from agency where agency.agency_id = routes.agency_id);'
 		);
+
+		// trips table
+		console.info ( '\nfor trips...\n\n' );
+		await theMySqlDb.execSql (
+			'update trips set trips.route_pk = ' +
+			'(select route_pk from routes where routes.route_id = trips.route_id);'
+		);
+
+		// stop_times table
+		console.info ( '\nfor stop_times...\n\n' );
+		await theMySqlDb.execSql (
+			'update stop_times set stop_times.stop_pk = ' +
+			'( select stop_pk from stops where stops.stop_id = stop_times.stop_id );'
+		);
+		await theMySqlDb.execSql (
+			'update stop_times set stop_times.trip_pk = ' +
+			'( select trip_pk from trips where trips.trip_id = stop_times.trip_id );'
+		);
+
+		// calendar table
+		console.info ( '\nfor calendar...\n\n' );
+		await theMySqlDb.execSql (
+			'update calendar set calendar.service_pk = ' +
+			'(select services_pk.service_pk from services_pk where services_pk.service_id = calendar.service_id );'
+		);
+
+		// calendar_dates table
+		console.info ( '\nfor calendar_dates...\n\n' );
+		await theMySqlDb.execSql (
+			'update calendar_dates set calendar_dates.service_pk = ' +
+			'(select services_pk.service_pk from services_pk where services_pk.service_id = calendar_dates.service_id );'
+		);
+
+		// shapes table
+		console.info ( '\nfor shapes...\n\n' );
+		await theMySqlDb.execSql (
+			'update shapes set shapes.shape_pk = ' +
+			'(select shapes_pk.shape_pk from shapes_pk where shapes_pk.shape_id = shapes.shape_id );'
+		);
+
+		// trips table
+		console.info ( '\nfor trips...\n\n' );
+		await theMySqlDb.execSql (
+			'update trips set trips.service_pk = ' +
+			'(select services_pk.service_pk from services_pk where services_pk.service_id = trips.service_id );'
+		);
+		await theMySqlDb.execSql (
+			'update trips set trips.shape_pk = ' +
+			'(select shapes_pk .shape_pk from shapes_pk where shapes_pk.shape_id = trips.shape_id );'
+		);
+
+		console.info ( '\nLoading of PK ended...\n\n' );
 	}
 
 	/**
@@ -163,18 +205,20 @@ class GtfsLoader {
 
 	async #loadTablesPk ( ) {
 
-		await theMySqlDb.execSql (
-			'insert into agencies_pk (agency_id) select DISTINCT agency_id from agency;'
-		);
+		console.info ( '\nLoading of tables PK started...\n\n' );
 
 		await theMySqlDb.execSql (
-			'insert into routes_pk (route_id) select DISTINCT route_id from routes;'
+			'insert into services_pk (service_id ) select distinct service_id from ( ' +
+				'select trips.service_id from trips union ' +
+				'select calendar.service_id from calendar union ' +
+				'select calendar_dates.service_id from calendar_dates ' +
+			') t order by service_id;'
 		);
 
 		await theMySqlDb.execSql (
 			'insert into shapes_pk (shape_id) select DISTINCT shape_id from shapes;'
 		);
-
+		console.info ( '\nLoading of tables PK ended...\n\n' );
 	}
 
 	/**
@@ -183,6 +227,8 @@ class GtfsLoader {
 
 	// eslint-disable-next-line max-statements
 	async start ( ) {
+		const startTime = process.hrtime.bigint ( );
+
 		console.info ( '\nStarting gtfs2mysql ...\n\n' );
 		await theMySqlDb.start ( );
 
@@ -211,7 +257,6 @@ class GtfsLoader {
 		await stopTimesTableLoader.createTable ( );
 		await translationsTableLoader.createTable ( );
 		await tripsTableLoader.createTable ( );
-
 		await this.#createTablesPk ( );
 
 		await this.#createViews ( );
@@ -241,7 +286,20 @@ class GtfsLoader {
 
 		await this.#loadTablesPk ( );
 
+		await this.#loadPk ( );
+
+		await theMySqlDb.execSql ( 'DROP TABLE `services_pk`, `shapes_pk`;' );
+
 		await theMySqlDb.end ( );
+
+		// end of the process
+		const deltaTime = process.hrtime.bigint ( ) - startTime;
+
+		/* eslint-disable-next-line no-magic-numbers */
+		const execTime = String ( deltaTime / 1000000000n ) + '.' + String ( deltaTime % 1000000000n ).substring ( 0, 3 );
+
+		console.error ( `\nFiles generated in ${execTime} seconds.` );
+
 		console.info ( '\ngtfs2mysql ended...\n\n' );
 	}
 }

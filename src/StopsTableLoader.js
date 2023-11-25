@@ -23,7 +23,6 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
-import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -47,11 +46,21 @@ class StopsTableLoader extends TableLoader {
 	constructor ( ) {
 		super ( );
 		this.fieldsMap.set (
+			'stop_pk',
+			{
+				name : 'stop_pk',
+				type : 'int',
+				primary : true
+			}
+		);
+		this.fieldsMap.set (
 			'stop_id',
 			{
 				name : 'stop_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				index : true,
+				collate : 'utf8mb4_0900_as_cs'
 			}
 		);
 		this.fieldsMap.set (
@@ -165,9 +174,6 @@ class StopsTableLoader extends TableLoader {
      */
 
 	async createIndexes ( ) {
-		await theMySqlDb.execSql (
-			'create index ix_stop_id on stops (stop_id);'
-		);
 	}
 
 }

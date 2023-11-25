@@ -39,7 +39,8 @@ class TableLoader {
      * @type {number}
      */
 
-	static get VARCHAR_LENGHT_5 ( ) { return 5; }
+	// eslint-disable-next-line no-magic-numbers
+	static get VARCHAR_LENGHT_10 ( ) { return 10; }
 
 	/**
      * Coming soon...
@@ -222,14 +223,32 @@ class TableLoader {
 			'DROP TABLE if EXISTS ' + this.tableName + ';'
 		);
 		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `' + theConfig.dbName + '`.`' + this.tableName + '` (';
+		let indexesString = '';
+		let primaryKey = null;
 		this.fieldsMap.forEach (
-			( value, key ) => createTableSqlString += '`' + key + '` ' +
-			value.type + ( ( value.length ) ? '(' + value.length + '), ' : ', ' )
+			value => {
+				createTableSqlString += '`' + value.name +
+					'` ' + value.type + ( ( value.length ) ? '(' + value.length + ') ' : ' ' ) +
+					( value.primary ? ' NOT NULL AUTO_INCREMENT' : '' ) +
+					( value.collate ? ' CHARACTER SET utf8mb4 COLLATE ' + value.collate : '' ) +
+					' ,';
+				if ( value.index ) {
+					indexesString += 'INDEX `ix_' + value.name + '` (`' + value.name + '`) ,';
+				}
+				if ( value.primary ) {
+					primaryKey = value;
+				}
+			}
 		);
+		if ( primaryKey ) {
+			createTableSqlString += 'PRIMARY KEY ( `' + primaryKey.name + '`) ,';
+		}
+		createTableSqlString += indexesString;
 		createTableSqlString = createTableSqlString.slice ( 0, createTableSqlString.length - 2 );
 		createTableSqlString += ') DEFAULT CHARACTER SET utf8mb4  COLLATE utf8mb4_0900_ai_ci;';
 
 		await theMySqlDb.execSql ( createTableSqlString );
+
 		await this.createIndexes ( );
 	}
 }

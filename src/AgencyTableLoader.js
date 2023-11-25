@@ -45,12 +45,23 @@ class AgencyTableLoader extends TableLoader {
 
 	constructor ( ) {
 		super ( );
+		Object.freeze ( this );
+		this.fieldsMap.set (
+			'agency_pk',
+			{
+				name : 'agency_pk',
+				type : 'int',
+				primary : true
+			}
+		);
 		this.fieldsMap.set (
 			'agency_id',
 			{
 				name : 'agency_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				index : true,
+				collate : 'utf8mb4_0900_as_cs'
 			}
 		);
 		this.fieldsMap.set (
@@ -82,7 +93,7 @@ class AgencyTableLoader extends TableLoader {
 			{
 				name : 'agency_lang',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_5
+				length : TableLoader.VARCHAR_LENGHT_10
 			}
 		);
 		this.fieldsMap.set (
@@ -109,7 +120,6 @@ class AgencyTableLoader extends TableLoader {
 				length : TableLoader.VARCHAR_LENGHT_256
 			}
 		);
-		Object.freeze ( this );
 	}
 
 	/**
