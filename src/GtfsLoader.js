@@ -35,6 +35,7 @@ import StopTimesTableLoader from './StopTimesTableLoader.js';
 import TranslationsTableLoader from './TranslationsTableLoader.js';
 import theConfig from './Config.js';
 import process from 'process';
+import fs from 'fs';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -174,37 +175,27 @@ class GtfsLoader {
      */
 
 	async #createViews ( ) {
+		let calendarFileExists = true;
+		try {
+			fs.accessSync ( theConfig.srcDir + '/calendar.txt' );
+		}
+		catch ( err ) {
+			calendarFileExists = false;
+		}
 
-		/*
-		if ( 'gtfs_delijn' === theConfig.dbName ) {
+		await theMySqlDb.execSql (
+			'DROP VIEW if exists `shapes_for_route`;'
+		);
+
+		if ( calendarFileExists ) {
 			await theMySqlDb.execSql (
 				'create view shapes_for_route as ' +
 				'select min(start_date) as minStartDate, max(end_date) as maxEndDate, ' +
-				'route_pk as routePk, shape_pk as shapePk, ' +
-				'shape_id as shapeId ' +
-				'from ' +
-				'( ' +
-				'select ' +
-				'(select min(feed_start_date) from feed_info) as start_date , ' +
-				'(select min(feed_end_date) from feed_info) as end_date, ' +
-				'routes_pk.route_pk, shapes_pk.shape_pk, shapes_pk.shape_id FROM routes_pk ' +
-				'inner join routes on routes_pk.route_id = routes.route_id ' +
-				'inner join trips on routes.route_id = trips.route_id ' +
-				'inner join shapes_pk on trips.shape_id = shapes_pk.shape_id ' +
-				') t ' +
-				'group by shapeId ;'
-			);
-		}
-		else {
-		}
-		*/
-
-		await theMySqlDb.execSql (
-			'create view shapes_for_route as ' +
-				'select min(start_date) as minStartDate, max(end_date) as maxEndDate, ' +
 				'route_pk as routePk, shape_pk as shapePk ' +
 				'from ( ' +
-					'select distinct calendar.start_date, calendar.end_date, ' +
+					'select distinct ' +
+					'calendar.start_date, ' +
+					'calendar.end_date, ' +
 					'routes.route_pk, trips.shape_pk ' +
 					'FROM ' +
 					'routes ' +
@@ -212,7 +203,25 @@ class GtfsLoader {
 					'inner join calendar on trips.service_pk = calendar.service_pk ' +
 				') t ' +
 				' group by shapePk order by minStartDate, maxEndDate;'
-		);
+			);
+		}
+		else {
+			await theMySqlDb.execSql (
+				'create view shapes_for_route as ' +
+				'select min(start_date) as minStartDate, max(end_date) as maxEndDate, ' +
+				'route_pk as routePk, shape_pk as shapePk ' +
+				'from ( ' +
+					'select ' +
+					'(select min(feed_start_date) from feed_info) as start_date, ' +
+					'(select min(feed_end_date) from feed_info) as end_date, ' +
+					'routes.route_pk, trips.shape_pk ' +
+					'FROM ' +
+					'routes ' +
+					'inner join trips on routes.route_pk = trips.route_pk' +
+				') t ' +
+				'group by shapePk'
+			);
+		}
 
 	}
 
