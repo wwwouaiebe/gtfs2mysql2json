@@ -45,11 +45,91 @@ import process from 'process';
 class GtfsLoader {
 
 	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#agencyTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#calendarDatesTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#calendarTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#feedInfoTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#routeTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#shapesTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#stopsTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#stopTimesTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#translationsTableLoader;
+
+	/**
+     * Coming soon...
+	 * @type {Object}
+     */
+
+	#tripsTableLoader;
+
+	/**
      * The constructor
      */
 
 	constructor ( ) {
 		Object.freeze ( this );
+		this.#agencyTableLoader = new AgencyTableLoader ( );
+		this.#calendarDatesTableLoader = new CalendarDatesTableLoader ( );
+		this.#calendarTableLoader = new CalendarTableLoader ( );
+		this.#feedInfoTableLoader = new FeedInfoTableLoader ( );
+		this.#routeTableLoader = new RouteTableLoader ( );
+		this.#shapesTableLoader = new ShapesTableLoader ( );
+		this.#stopsTableLoader = new StopsTableLoader ( );
+		this.#stopTimesTableLoader = new StopTimesTableLoader ( );
+		this.#translationsTableLoader = new TranslationsTableLoader ( );
+		this.#tripsTableLoader = new TripsTableLoader ( );
 	}
 
 	/**
@@ -58,7 +138,7 @@ class GtfsLoader {
 
 	async #createTablesPk ( ) {
 
-		console.info ( '\nCreation of tables for PK started...\n\n' );
+		console.info ( '\nCreation of tables for PK started...' );
 
 		await theMySqlDb.execSql (
 			'DROP TABLE if EXISTS services_pk;'
@@ -86,7 +166,7 @@ class GtfsLoader {
 			'create index ix_shape_id on shapes_pk (shape_id ); '
 		);
 
-		console.info ( '\nCreation of tables for PK ended...\n\n' );
+		console.info ( '\nCreation of tables for PK ended...' );
 	}
 
 	/**
@@ -95,6 +175,7 @@ class GtfsLoader {
 
 	async #createViews ( ) {
 
+		/*
 		if ( 'gtfs_delijn' === theConfig.dbName ) {
 			await theMySqlDb.execSql (
 				'create view shapes_for_route as ' +
@@ -115,8 +196,11 @@ class GtfsLoader {
 			);
 		}
 		else {
-			await theMySqlDb.execSql (
-				'create view shapes_for_route as ' +
+		}
+		*/
+
+		await theMySqlDb.execSql (
+			'create view shapes_for_route as ' +
 				'select min(start_date) as minStartDate, max(end_date) as maxEndDate, ' +
 				'route_pk as routePk, shape_pk as shapePk ' +
 				'from ( ' +
@@ -128,8 +212,8 @@ class GtfsLoader {
 					'inner join calendar on trips.service_pk = calendar.service_pk ' +
 				') t ' +
 				' group by shapePk order by minStartDate, maxEndDate;'
-			);
-		}
+		);
+
 	}
 
 	/**
@@ -137,24 +221,24 @@ class GtfsLoader {
      */
 
 	async #loadPk ( ) {
-		console.info ( '\nLoading of PK started...\n\n' );
+		console.info ( '\nLoading of PK started...' );
 
 		// routes table
-		console.info ( '\nfor routes...\n\n' );
+		console.info ( '\nfor routes...' );
 		await theMySqlDb.execSql (
 			'update routes set routes.agency_pk = ' +
 			'( select agency.agency_pk from agency where agency.agency_id = routes.agency_id);'
 		);
 
 		// trips table
-		console.info ( '\nfor trips...\n\n' );
+		console.info ( '\nfor trips...' );
 		await theMySqlDb.execSql (
 			'update trips set trips.route_pk = ' +
 			'(select route_pk from routes where routes.route_id = trips.route_id);'
 		);
 
 		// stop_times table
-		console.info ( '\nfor stop_times...\n\n' );
+		console.info ( '\nfor stop_times...' );
 		await theMySqlDb.execSql (
 			'update stop_times set stop_times.stop_pk = ' +
 			'( select stop_pk from stops where stops.stop_id = stop_times.stop_id );'
@@ -165,28 +249,28 @@ class GtfsLoader {
 		);
 
 		// calendar table
-		console.info ( '\nfor calendar...\n\n' );
+		console.info ( '\nfor calendar...' );
 		await theMySqlDb.execSql (
 			'update calendar set calendar.service_pk = ' +
 			'(select services_pk.service_pk from services_pk where services_pk.service_id = calendar.service_id );'
 		);
 
 		// calendar_dates table
-		console.info ( '\nfor calendar_dates...\n\n' );
+		console.info ( '\nfor calendar_dates...' );
 		await theMySqlDb.execSql (
 			'update calendar_dates set calendar_dates.service_pk = ' +
 			'(select services_pk.service_pk from services_pk where services_pk.service_id = calendar_dates.service_id );'
 		);
 
 		// shapes table
-		console.info ( '\nfor shapes...\n\n' );
+		console.info ( '\nfor shapes...' );
 		await theMySqlDb.execSql (
 			'update shapes set shapes.shape_pk = ' +
 			'(select shapes_pk.shape_pk from shapes_pk where shapes_pk.shape_id = shapes.shape_id );'
 		);
 
 		// trips table
-		console.info ( '\nfor trips...\n\n' );
+		console.info ( '\nfor trips...' );
 		await theMySqlDb.execSql (
 			'update trips set trips.service_pk = ' +
 			'(select services_pk.service_pk from services_pk where services_pk.service_id = trips.service_id );'
@@ -196,7 +280,7 @@ class GtfsLoader {
 			'(select shapes_pk .shape_pk from shapes_pk where shapes_pk.shape_id = trips.shape_id );'
 		);
 
-		console.info ( '\nLoading of PK ended...\n\n' );
+		console.info ( '\nLoading of PK ended...' );
 	}
 
 	/**
@@ -205,7 +289,7 @@ class GtfsLoader {
 
 	async #loadTablesPk ( ) {
 
-		console.info ( '\nLoading of tables PK started...\n\n' );
+		console.info ( '\nLoading of tables PK started...' );
 
 		await theMySqlDb.execSql (
 			'insert into services_pk (service_id ) select distinct service_id from ( ' +
@@ -218,7 +302,49 @@ class GtfsLoader {
 		await theMySqlDb.execSql (
 			'insert into shapes_pk (shape_id) select DISTINCT shape_id from shapes;'
 		);
-		console.info ( '\nLoading of tables PK ended...\n\n' );
+		console.info ( '\nLoading of tables PK ended...' );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async #createTables ( ) {
+		await this.#agencyTableLoader.createTable ( );
+		await this.#calendarDatesTableLoader.createTable ( );
+		await this.#calendarTableLoader.createTable ( );
+		await this.#feedInfoTableLoader.createTable ( );
+		await this.#routeTableLoader.createTable ( );
+		await this.#shapesTableLoader.createTable ( );
+		await this.#stopsTableLoader.createTable ( );
+		await this.#stopTimesTableLoader.createTable ( );
+		await this.#translationsTableLoader.createTable ( );
+		await this.#tripsTableLoader.createTable ( );
+	}
+
+	/**
+     * Coming soon...
+     */
+
+	async #loadData ( ) {
+		await this.#agencyTableLoader.loadData ( 'agency.txt' );
+		await this.#calendarDatesTableLoader.loadData ( 'calendar_dates.txt' );
+		await this.#calendarTableLoader.loadData ( 'calendar.txt' );
+		await this.#feedInfoTableLoader.loadData ( 'feed_info.txt' );
+		await this.#routeTableLoader.loadData ( 'routes.txt' );
+		await this.#shapesTableLoader.loadData ( 'shapes.txt' );
+		await this.#shapesTableLoader.loadData ( 'shapes1.txt' );
+		await this.#shapesTableLoader.loadData ( 'shapes2.txt' );
+		await this.#stopsTableLoader.loadData ( 'stops.txt' );
+		await this.#stopTimesTableLoader.loadData ( 'stop_times.txt' );
+		await this.#stopTimesTableLoader.loadData ( 'stop_times1.txt' );
+		await this.#stopTimesTableLoader.loadData ( 'stop_times2.txt' );
+		await this.#stopTimesTableLoader.loadData ( 'stop_times3.txt' );
+		await this.#stopTimesTableLoader.loadData ( 'stop_times4.txt' );
+		await this.#stopTimesTableLoader.loadData ( 'stop_times5.txt' );
+		await this.#stopTimesTableLoader.loadData ( 'stop_times6.txt' );
+		await this.#translationsTableLoader.loadData ( 'translations.txt' );
+		await this.#tripsTableLoader.loadData ( 'trips.txt' );
 	}
 
 	/**
@@ -232,53 +358,17 @@ class GtfsLoader {
 		console.info ( '\nStarting gtfs2mysql ...\n\n' );
 		await theMySqlDb.start ( );
 
-		const agencyTableLoader = new AgencyTableLoader ( );
-		const calendarDatesTableLoader = new CalendarDatesTableLoader ( );
-		const calendarTableLoader = new CalendarTableLoader ( );
-		const feedInfoTableLoader = new FeedInfoTableLoader ( );
-		const routeTableLoader = new RouteTableLoader ( );
-		const shapesTableLoader = new ShapesTableLoader ( );
-		const stopsTableLoader = new StopsTableLoader ( );
-		const stopTimesTableLoader = new StopTimesTableLoader ( );
-		const translationsTableLoader = new TranslationsTableLoader ( );
-		const tripsTableLoader = new TripsTableLoader ( );
-
 		theMySqlDb.execSql (
 			'DROP VIEW if exists lat_lon_for_shape, routes_for_agency, shapes_for_route;'
 		);
 
-		await agencyTableLoader.createTable ( );
-		await calendarDatesTableLoader.createTable ( );
-		await calendarTableLoader.createTable ( );
-		await feedInfoTableLoader.createTable ( );
-		await routeTableLoader.createTable ( );
-		await shapesTableLoader.createTable ( );
-		await stopsTableLoader.createTable ( );
-		await stopTimesTableLoader.createTable ( );
-		await translationsTableLoader.createTable ( );
-		await tripsTableLoader.createTable ( );
+		await this.#createTables ( );
+
 		await this.#createTablesPk ( );
 
 		await this.#createViews ( );
 
-		await agencyTableLoader.loadData ( 'agency.txt' );
-		await calendarDatesTableLoader.loadData ( 'calendar_dates.txt' );
-		await calendarTableLoader.loadData ( 'calendar.txt' );
-		await feedInfoTableLoader.loadData ( 'feed_info.txt' );
-		await routeTableLoader.loadData ( 'routes.txt' );
-		await shapesTableLoader.loadData ( 'shapes.txt' );
-		await shapesTableLoader.loadData ( 'shapes1.txt' );
-		await shapesTableLoader.loadData ( 'shapes2.txt' );
-		await stopsTableLoader.loadData ( 'stops.txt' );
-		await stopTimesTableLoader.loadData ( 'stop_times.txt' );
-		await stopTimesTableLoader.loadData ( 'stop_times1.txt' );
-		await stopTimesTableLoader.loadData ( 'stop_times2.txt' );
-		await stopTimesTableLoader.loadData ( 'stop_times3.txt' );
-		await stopTimesTableLoader.loadData ( 'stop_times4.txt' );
-		await stopTimesTableLoader.loadData ( 'stop_times5.txt' );
-		await stopTimesTableLoader.loadData ( 'stop_times6.txt' );
-		await translationsTableLoader.loadData ( 'translations.txt' );
-		await tripsTableLoader.loadData ( 'trips.txt' );
+		await this.#loadData ( );
 
 		await theMySqlDb.execSql (
 			'update routes set agency_id = \'STIB-MIVB\' where agency_id is null;'
@@ -298,7 +388,7 @@ class GtfsLoader {
 		/* eslint-disable-next-line no-magic-numbers */
 		const execTime = String ( deltaTime / 1000000000n ) + '.' + String ( deltaTime % 1000000000n ).substring ( 0, 3 );
 
-		console.error ( `\nFiles generated in ${execTime} seconds.` );
+		console.info ( `\nFiles generated in ${execTime} seconds.` );
 
 		console.info ( '\ngtfs2mysql ended...\n\n' );
 	}

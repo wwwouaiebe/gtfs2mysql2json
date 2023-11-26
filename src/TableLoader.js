@@ -88,8 +88,6 @@ class TableLoader {
 	#getFieldsValues ( dataLine ) {
 		let tmpFieldsValues = dataLine.split ( '"' );
 		let tmpDataLine = '';
-
-		// console.log ( tmpFieldsValues );
 		let tmpFieldsValuesCounter = 0;
 		for ( tmpFieldsValuesCounter = 0; tmpFieldsValuesCounter < tmpFieldsValues.length; tmpFieldsValuesCounter ++ ) {
 			if ( 0 !== ( tmpFieldsValuesCounter % 2 ) ) {
@@ -151,11 +149,11 @@ class TableLoader {
 			fs.accessSync ( theConfig.srcDir + '/' + fileName );
 		}
 		catch ( err ) {
-			console.error ( `File ${fileName} not found` );
+			console.info ( `\nFile ${fileName} not found` );
 			return;
 		}
 
-		console.info ( `Loading of file ${fileName} started` );
+		console.info ( `\nLoading of file ${fileName} started` );
 		let dataLines = this.#readFile ( fileName ).split ( /\r\n|\r|\n/ );
 		let insertSqlString = '';
 		let insertSqlStringHeader = '';
@@ -202,7 +200,7 @@ class TableLoader {
 				commitCounter ++;
 
 				if ( theConfig.commitCounter <= commitCounter ) {
-					console.info ( `${dataLinesCounter} records loaded.` );
+					console.info ( `\n${dataLinesCounter} records loaded.` );
 					commitCounter = 0;
 					await theMySqlDb.execSql ( 'commit' );
 				}
@@ -210,7 +208,7 @@ class TableLoader {
 		}
 		await theMySqlDb.execSql ( 'commit' );
 
-		console.info ( `Loading of file ${fileName}. ended ${dataLinesCounter} records loaded.` );
+		console.info ( `\nLoading of file ${fileName}. ended ${dataLinesCounter} records loaded.` );
 	}
 
 	/**
@@ -250,6 +248,7 @@ class TableLoader {
 		await theMySqlDb.execSql ( createTableSqlString );
 
 		await this.createIndexes ( );
+		console.info ( `\nTable ${this.tableName} created` );
 	}
 }
 
