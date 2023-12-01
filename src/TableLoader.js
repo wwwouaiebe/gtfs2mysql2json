@@ -35,6 +35,27 @@ import theMySqlDb from './MySqlDb.js';
 class TableLoader {
 
 	/**
+	 * Coming soom...
+	 * @type {String}
+	 */
+
+	#remainingData = '';
+
+	/**
+	 * Coming soom...
+	 * @type {String}
+	 */
+
+	#dataLinesCounter;
+
+	/**
+	 * Coming soom...
+	 * @type {String}
+	 */
+
+	#insertSqlStringHeader;
+
+	/**
      * Coming soon...
      * @type {number}
      */
@@ -59,6 +80,14 @@ class TableLoader {
 	static get VARCHAR_LENGHT_256 ( ) { return 256; }
 
 	/**
+     * Coming soon...
+     * @type {number}
+     */
+
+	// eslint-disable-next-line no-magic-numbers
+	static get HIGH_WATER_MARK () { return 2097152; }
+
+	/**
     * Coming soon...
     * @type {Map}
    */
@@ -77,7 +106,7 @@ class TableLoader {
      */
 
 	constructor ( ) {
-
+		Object.freeze ( this );
 	}
 
 	/**
@@ -107,35 +136,86 @@ class TableLoader {
 
 	/**
      * Coming soon...
-	 * @param {String} fileName Comming soon...
-     */
-
-	#readFile ( fileName ) {
-		return fs.readFileSync (
-			theConfig.srcDir + '/' + fileName,
-			'utf8'
-		);
-	}
-
-	/**
-     * Coming soon...
      * @param {string} dataLine
      * @returns {string} the header of the sql
      */
 
-	#getInsertSqlStringHeader ( dataLine ) {
+	#setInsertSqlStringHeader ( dataLine ) {
 		let fields = dataLine.split ( ',' );
-		let sqlStringHeader = ' INSERT INTO `' + theConfig.dbName + '`.`' + this.tableName + '` (';
+		this.#insertSqlStringHeader = ' INSERT INTO `' + theConfig.dbName + '`.`' + this.tableName + '` (';
 		fields.forEach (
 			field => {
-				sqlStringHeader += '`' + field + '`, ';
+				this.#insertSqlStringHeader += '`' + field + '`, ';
 				this.#fieldsList.push ( field );
 			}
 		);
-		sqlStringHeader = sqlStringHeader.slice ( 0, sqlStringHeader.length - 2 );
-		sqlStringHeader += ') VALUES (';
+		this.#insertSqlStringHeader = this.#insertSqlStringHeader.slice ( 0, this.#insertSqlStringHeader.length - 2 );
+		this.#insertSqlStringHeader += ') VALUES (';
+	}
 
-		return sqlStringHeader;
+	/**
+     * Coming soon...
+	 * @param {String} dataLine Comming soon...
+      */
+
+	async #processData ( dataLine ) {
+		// eslint-disable-next-line no-empty
+		if ( ! dataLine || '' === dataLine ) {
+			return;
+		}
+
+		// first line contains the fields names
+		if ( '' === this.#insertSqlStringHeader ) {
+			this.#setInsertSqlStringHeader ( dataLine.replaceAll ( '"', '' ) );
+			return;
+		}
+
+		this.#dataLinesCounter ++;
+
+		// line is splited into fields values
+		let fieldValues = this.#getFieldsValues ( dataLine );
+		let fieldCounter = 0;
+		let insertSqlString = this.#insertSqlStringHeader;
+		fieldValues.forEach (
+			fieldValue => {
+				let separator =
+						'varchar' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
+						||
+						'time' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
+							?
+							'\''
+							:
+							'';
+
+				insertSqlString += separator +
+							fieldValue.replaceAll ( '"', '' ).replaceAll ( '\'', '´' ) +
+							separator + ', ';
+				fieldCounter ++;
+			}
+		);
+		insertSqlString = insertSqlString.slice ( 0, insertSqlString.length - 2 );
+		insertSqlString += ');';
+
+		await theMySqlDb.execSql ( insertSqlString );
+	}
+
+	/**
+     * Coming soon...
+	 * @param {String} partialData Comming soon...
+      */
+
+	async #loadPartialData ( partialData ) {
+		let dataArray = partialData.split ( /\r\n|\r|\n/ );
+		dataArray [ 0 ] = this.#remainingData + dataArray [ 0 ];
+		this.#remainingData = dataArray.pop ( );
+
+		for ( let dataCounter = 0; dataCounter < dataArray.length; dataCounter ++ ) {
+			await this.#processData ( dataArray [ dataCounter ] );
+		}
+
+		await theMySqlDb.execSql ( 'commit;' );
+
+		console.info ( `${this.#dataLinesCounter} records loaded` );
 	}
 
 	/**
@@ -144,6 +224,10 @@ class TableLoader {
       */
 
 	async loadData ( fileName ) {
+
+		this.#dataLinesCounter = 0;
+		this.#insertSqlStringHeader = '';
+		this.#remainingData = '';
 
 		try {
 			fs.accessSync ( theConfig.srcDir + '/' + fileName );
@@ -154,61 +238,21 @@ class TableLoader {
 		}
 
 		console.info ( `\nLoading of file ${fileName} started` );
-		let dataLines = this.#readFile ( fileName ).split ( /\r\n|\r|\n/ );
-		let insertSqlString = '';
-		let insertSqlStringHeader = '';
-		let commitCounter = 0;
-		let dataLinesCounter = 0;
-		for ( dataLinesCounter = 0; dataLinesCounter < dataLines.length; dataLinesCounter ++ ) {
 
-			// first line contains the fields names
-			if ( '' === insertSqlStringHeader ) {
-				insertSqlStringHeader =
-					this.#getInsertSqlStringHeader ( dataLines [ dataLinesCounter ].replaceAll ( '"', '' ) );
+		let readableStream = fs.createReadStream (
+			theConfig.srcDir + '/' + fileName,
+			{
+				encoding : 'utf8',
+				highWaterMark : TableLoader.HIGH_WATER_MARK
 			}
-			else if ( '' !== dataLines [ dataLinesCounter ] ) {
+		);
 
-				// line is splited into fields values
-				let fieldValues = this.#getFieldsValues ( dataLines [ dataLinesCounter ] );
-				let fieldCounter = 0;
-				insertSqlString = insertSqlStringHeader;
-				fieldValues.forEach (
-					fieldValue => {
-						let separator =
-						'varchar' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
-						||
-						'time' === this.fieldsMap.get ( this.#fieldsList [ fieldCounter ] ).type
-							?
-							'\''
-							:
-							'';
+		await readableStream.forEach (
+			async data => await this.#loadPartialData ( data )
+		);
 
-						insertSqlString += separator +
-							fieldValue.replaceAll ( '"', '' ).replaceAll ( '\'', '´' ) +
-							separator + ', ';
-						fieldCounter ++;
-					}
-				);
-				insertSqlString = insertSqlString.slice ( 0, insertSqlString.length - 2 );
-				insertSqlString += ');';
+		console.info ( `\nLoading of file ${fileName}. ended ${this.#dataLinesCounter} records loaded.` );
 
-				theMySqlDb.execSql ( insertSqlString )
-					.then ( )
-					.catch ( /* () => console.error ( `An error occurs when executing ${insertSqlString}` )*/ );
-
-				// commit...
-				commitCounter ++;
-
-				if ( theConfig.commitCounter <= commitCounter ) {
-					console.info ( `\n${dataLinesCounter} records loaded.` );
-					commitCounter = 0;
-					await theMySqlDb.execSql ( 'commit' );
-				}
-			}
-		}
-		await theMySqlDb.execSql ( 'commit' );
-
-		console.info ( `\nLoading of file ${fileName}. ended ${dataLinesCounter} records loaded.` );
 	}
 
 	/**

@@ -336,28 +336,22 @@ class GtfsLoader {
      */
 
 	async #loadData ( ) {
+
 		await this.#agencyTableLoader.loadData ( 'agency.txt' );
 		await this.#calendarDatesTableLoader.loadData ( 'calendar_dates.txt' );
 		await this.#calendarTableLoader.loadData ( 'calendar.txt' );
 		await this.#feedInfoTableLoader.loadData ( 'feed_info.txt' );
 		await this.#routeTableLoader.loadData ( 'routes.txt' );
 		await this.#shapesTableLoader.loadData ( 'shapes.txt' );
-		await this.#shapesTableLoader.loadData ( 'shapes1.txt' );
-		await this.#shapesTableLoader.loadData ( 'shapes2.txt' );
 		await this.#stopsTableLoader.loadData ( 'stops.txt' );
 		await this.#stopTimesTableLoader.loadData ( 'stop_times.txt' );
-		await this.#stopTimesTableLoader.loadData ( 'stop_times1.txt' );
-		await this.#stopTimesTableLoader.loadData ( 'stop_times2.txt' );
-		await this.#stopTimesTableLoader.loadData ( 'stop_times3.txt' );
-		await this.#stopTimesTableLoader.loadData ( 'stop_times4.txt' );
-		await this.#stopTimesTableLoader.loadData ( 'stop_times5.txt' );
-		await this.#stopTimesTableLoader.loadData ( 'stop_times6.txt' );
 		await this.#translationsTableLoader.loadData ( 'translations.txt' );
 		await this.#tripsTableLoader.loadData ( 'trips.txt' );
+
 	}
 
 	/**
-     * Start the upload of the gtsf
+     * Start the upload of the gtfs
      */
 
 	// eslint-disable-next-line max-statements
