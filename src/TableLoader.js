@@ -159,7 +159,7 @@ class TableLoader {
       */
 
 	async #processData ( dataLine ) {
-		// eslint-disable-next-line no-empty
+
 		if ( ! dataLine || '' === dataLine ) {
 			return;
 		}
@@ -232,7 +232,7 @@ class TableLoader {
 		try {
 			fs.accessSync ( theConfig.srcDir + '/' + fileName );
 		}
-		catch ( err ) {
+		catch {
 			console.info ( `\nFile ${fileName} not found` );
 			return;
 		}

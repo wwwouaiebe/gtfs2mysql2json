@@ -179,7 +179,7 @@ class GtfsLoader {
 		try {
 			fs.accessSync ( theConfig.srcDir + '/calendar.txt' );
 		}
-		catch ( err ) {
+		catch {
 			calendarFileExists = false;
 		}
 
@@ -354,7 +354,6 @@ class GtfsLoader {
      * Start the upload of the gtfs
      */
 
-	// eslint-disable-next-line max-statements
 	async start ( ) {
 		const startTime = process.hrtime.bigint ( );
 
