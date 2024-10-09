@@ -16,7 +16,7 @@
         "grunt-wwwouaiebe-buildnumber": "latest"
     },
     "dependencies": {
-        "mysql2": "^3.6.3"
+        "mysql2": "latest"
     },
     "repository": {
         "type": "git",
