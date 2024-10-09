@@ -23,7 +23,6 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
-import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -47,19 +46,11 @@ class TripsTableLoader extends TableLoader {
 	constructor ( ) {
 		super ( );
 		this.fieldsMap.set (
-			'route_id',
+			'trip_pk',
 			{
-				name : 'route_id',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
-			}
-		);
-		this.fieldsMap.set (
-			'service_id',
-			{
-				name : 'service_id',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				name : 'trip_pk',
+				type : 'int',
+				primary : true
 			}
 		);
 		this.fieldsMap.set (
@@ -67,7 +58,45 @@ class TripsTableLoader extends TableLoader {
 			{
 				name : 'trip_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				collate : 'utf8mb4_0900_as_cs',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
+			'route_pk',
+			{
+				name : 'route_pk',
+				type : 'int',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
+			'route_id',
+			{
+				name : 'route_id',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_64,
+				collate : 'utf8mb4_0900_as_cs',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
+			'service_pk',
+			{
+				name : 'service_pk',
+				type : 'int',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
+			'service_id',
+			{
+				name : 'service_id',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_64,
+				collate : 'utf8mb4_0900_as_cs',
+				index : true
 			}
 		);
 		this.fieldsMap.set (
@@ -102,11 +131,21 @@ class TripsTableLoader extends TableLoader {
 			}
 		);
 		this.fieldsMap.set (
+			'shape_pk',
+			{
+				name : 'shape_pk',
+				type : 'int',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
 			'shape_id',
 			{
 				name : 'shape_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				collate : 'utf8mb4_0900_as_cs',
+				index : true
 			}
 		);
 		this.fieldsMap.set (
@@ -131,19 +170,6 @@ class TripsTableLoader extends TableLoader {
      */
 
 	async createIndexes ( ) {
-		await theMySqlDb.execSql (
-			'create index ix_route_id on trips ( route_id );'
-		);
-		await theMySqlDb.execSql (
-			'create index ix_service_id on trips ( service_id );'
-		);
-		await theMySqlDb.execSql (
-			'create index ix_shape_id on trips ( shape_id );'
-		);
-		await theMySqlDb.execSql (
-			'create index ix_trip_id on trips ( trip_id );'
-		);
-
 	}
 
 }

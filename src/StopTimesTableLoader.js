@@ -54,11 +54,39 @@ class StopTimesTableLoader extends TableLoader {
 	constructor ( ) {
 		super ( );
 		this.fieldsMap.set (
+			'stop_pk',
+			{
+				name : 'stop_pk',
+				type : 'int',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
+			'stop_id',
+			{
+				name : 'stop_id',
+				type : 'varchar',
+				length : TableLoader.VARCHAR_LENGHT_64,
+				collate : 'utf8mb4_0900_as_cs',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
+			'trip_pk',
+			{
+				name : 'trip_pk',
+				type : 'int',
+				index : true
+			}
+		);
+		this.fieldsMap.set (
 			'trip_id',
 			{
 				name : 'trip_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				collate : 'utf8mb4_0900_as_cs',
+				index : true
 			}
 		);
 		this.fieldsMap.set (
@@ -73,14 +101,6 @@ class StopTimesTableLoader extends TableLoader {
 			{
 				name : 'departure_time',
 				type : 'time'
-			}
-		);
-		this.fieldsMap.set (
-			'stop_id',
-			{
-				name : 'stop_id',
-				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
 			}
 		);
 		this.fieldsMap.set (
@@ -150,10 +170,7 @@ class StopTimesTableLoader extends TableLoader {
 
 	async createIndexes ( ) {
 		await theMySqlDb.execSql (
-			'create index ix_stop_id on stop_times (stop_id);'
-		);
-		await theMySqlDb.execSql (
-			'create index ix_stop_id_stop_sequence on stop_times (stop_id, stop_sequence);'
+			'create index ix_stop_pk_stop_sequence on stop_times (stop_pk, stop_sequence);'
 		);
 	}
 

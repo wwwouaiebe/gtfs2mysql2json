@@ -23,7 +23,6 @@ Changes:
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 import TableLoader from './TableLoader.js';
-import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -47,11 +46,29 @@ class RouteTableLoader extends TableLoader {
 	constructor ( ) {
 		super ( );
 		this.fieldsMap.set (
+			'route_pk',
+			{
+				name : 'route_pk',
+				type : 'int',
+				primary : true
+			}
+		);
+		this.fieldsMap.set (
 			'route_id',
 			{
 				name : 'route_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				index : true,
+				collate : 'utf8mb4_0900_as_cs'
+			}
+		);
+		this.fieldsMap.set (
+			'agency_pk',
+			{
+				name : 'agency_pk',
+				type : 'int',
+				index : true
 			}
 		);
 		this.fieldsMap.set (
@@ -59,7 +76,9 @@ class RouteTableLoader extends TableLoader {
 			{
 				name : 'agency_id',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_64
+				length : TableLoader.VARCHAR_LENGHT_64,
+				index : true,
+				collate : 'utf8mb4_0900_as_cs'
 			}
 		);
 		this.fieldsMap.set (
@@ -146,12 +165,6 @@ class RouteTableLoader extends TableLoader {
      */
 
 	async createIndexes ( ) {
-		await theMySqlDb.execSql (
-			'create index ix_agency_id on routes (agency_id);'
-		);
-		await theMySqlDb.execSql (
-			'create index ix_route_id on routes (route_id);'
-		);
 	}
 
 }

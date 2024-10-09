@@ -62,7 +62,7 @@ class TranslationsTableLoader extends TableLoader {
 			{
 				name : 'lang',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_5
+				length : TableLoader.VARCHAR_LENGHT_10
 			}
 		);
 		this.fieldsMap.set (
@@ -86,7 +86,7 @@ class TranslationsTableLoader extends TableLoader {
 			{
 				name : 'language',
 				type : 'varchar',
-				length : TableLoader.VARCHAR_LENGHT_5
+				length : TableLoader.VARCHAR_LENGHT_10
 			}
 		);
 		this.fieldsMap.set (
