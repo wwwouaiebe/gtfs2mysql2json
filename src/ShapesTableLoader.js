@@ -27,21 +27,21 @@ import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Loader for the 'shapes' table
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class ShapesTableLoader extends TableLoader {
 
 	/**
-     * Coming soon...
+     * The name of the table
      * @type {string}
      */
 
 	get tableName ( ) { return 'shapes'; }
 
 	/**
-     * The cosntructor
+     * The name of the table
      */
 
 	constructor ( ) {
@@ -98,7 +98,7 @@ class ShapesTableLoader extends TableLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of the indexes
      */
 
 	async createIndexes ( ) {

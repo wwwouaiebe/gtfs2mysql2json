@@ -26,14 +26,14 @@ import TableLoader from './TableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Loader for the 'trips' table
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class TripsTableLoader extends TableLoader {
 
 	/**
-     * Coming soon...
+     * The name of the table
      * @type {string}
      */
 
@@ -166,7 +166,7 @@ class TripsTableLoader extends TableLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of the indexes
      */
 
 	async createIndexes ( ) {

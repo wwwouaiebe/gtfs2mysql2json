@@ -26,14 +26,14 @@ import TableLoader from './TableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Loader for the 'translations' table
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class TranslationsTableLoader extends TableLoader {
 
 	/**
-     * Coming soon...
+     * The name of the table
      * @type {string}
      */
 
@@ -125,7 +125,7 @@ class TranslationsTableLoader extends TableLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of the indexes
      */
 
 	async createIndexes ( ) {

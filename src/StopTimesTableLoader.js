@@ -27,21 +27,21 @@ import theMySqlDb from './MySqlDb.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Loader for the 'stop_times' table
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class StopTimesTableLoader extends TableLoader {
 
 	/**
-     * Coming soon...
+     * The name of the table
      * @type {string}
      */
 
 	get fileName ( ) { return 'stop_times.txt'; }
 
 	/**
-     * Coming soon...
+     * The name of the table
      * @type {string}
      */
 
@@ -165,7 +165,7 @@ class StopTimesTableLoader extends TableLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of the indexes
      */
 
 	async createIndexes ( ) {

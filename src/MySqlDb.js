@@ -24,13 +24,12 @@ Changes:
 
 import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-
 import mysql from 'mysql2';
 import theOperator from './Operator.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Encapsulation for the mysql db
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 

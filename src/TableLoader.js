@@ -28,35 +28,35 @@ import theOperator from './Operator.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Base class for the table loading
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class TableLoader {
 
 	/**
-	 * Coming soom...
+	 * The data not loaded during the previous upload
 	 * @type {String}
 	 */
 
 	#remainingData = '';
 
 	/**
-	 * Coming soom...
+	 * A counter for the lines in the GTFS file
 	 * @type {String}
 	 */
 
 	#dataLinesCounter;
 
 	/**
-	 * Coming soom...
+	 * The header of the insert sql string
 	 * @type {String}
 	 */
 
 	#insertSqlStringHeader;
 
 	/**
-     * Coming soon...
+     * Constant for varchar
      * @type {number}
      */
 
@@ -64,7 +64,7 @@ class TableLoader {
 	static get VARCHAR_LENGHT_10 ( ) { return 10; }
 
 	/**
-     * Coming soon...
+     * Constant for varchar
      * @type {number}
      */
 
@@ -72,7 +72,7 @@ class TableLoader {
 	static get VARCHAR_LENGHT_64 ( ) { return 64; }
 
 	/**
-     * Coming soon...
+     * Constant for varchar
      * @type {number}
      */
 
@@ -80,7 +80,7 @@ class TableLoader {
 	static get VARCHAR_LENGHT_256 ( ) { return 256; }
 
 	/**
-     * Coming soon...
+     * Constant for HIGH_WATER_MARK
      * @type {number}
      */
 
@@ -88,14 +88,14 @@ class TableLoader {
 	static get HIGH_WATER_MARK () { return 2097152; }
 
 	/**
-    * Coming soon...
+    * A js map for the fields (= objects) of the table
     * @type {Map}
    */
 
 	fieldsMap = new Map ( );
 
 	/**
-	 * Coming soon
+	 * An array with the fields name
 	 * @type {Array}
 	 */
 
@@ -110,14 +110,19 @@ class TableLoader {
 	}
 
 	/**
-	 * Coming soon...
-	 * @param {String} dataLine Coming soon...
+	 * Get the fields values in a line of the gtfs file.
+	 * @param {String} dataLine A line of the gtfs file
 	 */
 
 	#getFieldsValues ( dataLine ) {
+
+		// it's complex... field are comma separated, but values can contains a comma...
+		// So, first we split the line at the ""
 		let tmpFieldsValues = dataLine.split ( '"' );
 		let tmpDataLine = '';
 		let tmpFieldsValuesCounter = 0;
+
+		// and we replace comma with a dummy text and rebuild the line in a tmp variable
 		for ( tmpFieldsValuesCounter = 0; tmpFieldsValuesCounter < tmpFieldsValues.length; tmpFieldsValuesCounter ++ ) {
 			if ( 0 !== ( tmpFieldsValuesCounter % 2 ) ) {
 				tmpFieldsValues [ tmpFieldsValuesCounter ] =
@@ -125,17 +130,22 @@ class TableLoader {
 			}
 			tmpDataLine += tmpFieldsValues [ tmpFieldsValuesCounter ];
 		}
+
+		// then we split the tmp variable at the comma
 		tmpFieldsValues = tmpDataLine.split ( ',' );
 
+		// and we replace the dummy text with a comma
 		for ( tmpFieldsValuesCounter = 0; tmpFieldsValuesCounter < tmpFieldsValues.length; tmpFieldsValuesCounter ++ ) {
 			tmpFieldsValues [ tmpFieldsValuesCounter ] =
 				tmpFieldsValues [ tmpFieldsValuesCounter ].replaceAll ( 'çççççç', ',' );
 		}
+
+		// returning an array with the values
 		return tmpFieldsValues;
 	}
 
 	/**
-     * Coming soon...
+     * Crete the first part of the sql insert string
      * @param {string} dataLine
      * @returns {string} the header of the sql
      */
@@ -154,12 +164,13 @@ class TableLoader {
 	}
 
 	/**
-     * Coming soon...
-	 * @param {String} dataLine Comming soon...
+     * Processig each line of the gtfs file
+	 * @param {String} dataLine A line of the gtfs file.
       */
 
 	async #processData ( dataLine ) {
 
+		// No data then return
 		if ( ! dataLine || '' === dataLine ) {
 			return;
 		}
@@ -176,6 +187,8 @@ class TableLoader {
 		let fieldValues = this.#getFieldsValues ( dataLine );
 		let fieldCounter = 0;
 		let insertSqlString = this.#insertSqlStringHeader;
+
+		// adding values to the sql insert string
 		fieldValues.forEach (
 			fieldValue => {
 				let separator =
@@ -193,6 +206,8 @@ class TableLoader {
 				fieldCounter ++;
 			}
 		);
+
+		// Finshing the sql insert string
 		insertSqlString = insertSqlString.slice ( 0, insertSqlString.length - 2 );
 		insertSqlString += ');';
 
@@ -200,35 +215,45 @@ class TableLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Load a block of data
 	 * @param {String} partialData Comming soon...
       */
 
 	async #loadPartialData ( partialData ) {
+
+		// Split the data into lines
 		let dataArray = partialData.split ( /\r\n|\r|\n/ );
+
+		// Adding remaining data of the previous loop
 		dataArray [ 0 ] = this.#remainingData + dataArray [ 0 ];
+
+		// Saving the last line of data (perhaps incomplete...)
 		this.#remainingData = dataArray.pop ( );
 
+		// loop on the complete lines
 		for ( let dataCounter = 0; dataCounter < dataArray.length; dataCounter ++ ) {
 			await this.#processData ( dataArray [ dataCounter ] );
 		}
 
+		// commit and message
 		await theMySqlDb.execSql ( 'commit;' );
 
 		console.info ( `${this.#dataLinesCounter} records loaded` );
 	}
 
 	/**
-     * Coming soon...
-	 * @param {String} fileName Comming soon...
+     * Loading data from the GTFS file
+	 * @param {String} fileName The GTFS file name
       */
 
 	async loadData ( fileName ) {
 
+		// init members
 		this.#dataLinesCounter = 0;
 		this.#insertSqlStringHeader = '';
 		this.#remainingData = '';
 
+		// test the existence of the file
 		try {
 			fs.accessSync ( theOperator.gtfsDirectory + '/' + fileName );
 		}
@@ -239,6 +264,7 @@ class TableLoader {
 
 		console.info ( `\nLoading of file ${fileName} started` );
 
+		// creation of a stream. Remember that some gtfs files are big!
 		let readableStream = fs.createReadStream (
 			theOperator.gtfsDirectory + '/' + fileName,
 			{
@@ -247,6 +273,7 @@ class TableLoader {
 			}
 		);
 
+		// reading the streem
 		await readableStream.forEach (
 			async data => await this.#loadPartialData ( data )
 		);
@@ -256,7 +283,7 @@ class TableLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of the table
      */
 
 	async createTable ( ) {

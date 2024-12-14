@@ -26,14 +26,14 @@ import TableLoader from './TableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Loader for the 'calendar' table
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class CalendarTableLoader extends TableLoader {
 
 	/**
-     * Coming soon...
+     * The name of the table
      * @type {string}
      */
 
@@ -132,7 +132,7 @@ class CalendarTableLoader extends TableLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of the indexes
      */
 
 	async createIndexes ( ) {

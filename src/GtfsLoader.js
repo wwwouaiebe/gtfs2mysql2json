@@ -37,77 +37,77 @@ import fs from 'fs';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon...
+ * Loader for the gtfs data
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class GtfsLoader {
 
 	/**
-     * Coming soon...
+     * the 'agency' table loader
 	 * @type {Object}
      */
 
 	#agencyTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'calendar_dates' table loader
 	 * @type {Object}
      */
 
 	#calendarDatesTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'calendar' table loader
 	 * @type {Object}
      */
 
 	#calendarTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'feed_info' table loader
 	 * @type {Object}
      */
 
 	#feedInfoTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'route' table loader
 	 * @type {Object}
      */
 
 	#routeTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'shapes' table loader
 	 * @type {Object}
      */
 
 	#shapesTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'stops' table loader
 	 * @type {Object}
      */
 
 	#stopsTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'stop_times' table loader
 	 * @type {Object}
      */
 
 	#stopTimesTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'translations' table loader
 	 * @type {Object}
      */
 
 	#translationsTableLoader;
 
 	/**
-     * Coming soon...
+     * the 'trips' table loader
 	 * @type {Object}
      */
 
@@ -132,13 +132,14 @@ class GtfsLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of temporary tables for primary keys and indexes
      */
 
 	async #createTablesPk ( ) {
 
 		console.info ( '\nCreation of tables for PK started...' );
 
+		// services
 		await theMySqlDb.execSql (
 			'DROP TABLE if EXISTS services_pk;'
 		);
@@ -152,6 +153,7 @@ class GtfsLoader {
 			'create index ix_service_id on services_pk (service_id ); '
 		);
 
+		// Shapes
 		await theMySqlDb.execSql (
 			'DROP TABLE if EXISTS shapes_pk;'
 		);
@@ -169,7 +171,7 @@ class GtfsLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Creation of the views
      */
 
 	async #createViews ( ) {
@@ -224,7 +226,7 @@ class GtfsLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Complete the tables with the primary keys
      */
 
 	async #loadPk ( ) {
@@ -291,7 +293,7 @@ class GtfsLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Loading of temp tables with primary keys
      */
 
 	async #loadTablesPk ( ) {
@@ -313,7 +315,7 @@ class GtfsLoader {
 	}
 
 	/**
-     * Coming soon...
+     * create the tables in the db
      */
 
 	async #createTables ( ) {
@@ -330,7 +332,7 @@ class GtfsLoader {
 	}
 
 	/**
-     * Coming soon...
+     * Load the GTFS files into the db
      */
 
 	async #loadData ( ) {
