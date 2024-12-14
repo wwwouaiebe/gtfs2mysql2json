@@ -33,8 +33,6 @@ import StopsTableLoader from './StopsTableLoader.js';
 import TripsTableLoader from './TripsTableLoader.js';
 import StopTimesTableLoader from './StopTimesTableLoader.js';
 import TranslationsTableLoader from './TranslationsTableLoader.js';
-import theConfig from './Config.js';
-import process from 'process';
 import fs from 'fs';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
@@ -177,7 +175,7 @@ class GtfsLoader {
 	async #createViews ( ) {
 		let calendarFileExists = true;
 		try {
-			fs.accessSync ( theConfig.srcDir + '/calendar.txt' );
+			fs.accessSync ( theOperator.gtfsDirectory + '/calendar.txt' );
 		}
 		catch {
 			calendarFileExists = false;
@@ -355,10 +353,6 @@ class GtfsLoader {
      */
 
 	async start ( ) {
-		const startTime = process.hrtime.bigint ( );
-
-		console.info ( '\nStarting gtfs2mysql2json ...\n\n' );
-		await theMySqlDb.start ( );
 
 		theMySqlDb.execSql (
 			'DROP VIEW if exists lat_lon_for_shape, routes_for_agency, shapes_for_route;'
@@ -382,17 +376,6 @@ class GtfsLoader {
 
 		await theMySqlDb.execSql ( 'DROP TABLE `services_pk`, `shapes_pk`;' );
 
-		await theMySqlDb.end ( );
-
-		// end of the process
-		const deltaTime = process.hrtime.bigint ( ) - startTime;
-
-		/* eslint-disable-next-line no-magic-numbers */
-		const execTime = String ( deltaTime / 1000000000n ) + '.' + String ( deltaTime % 1000000000n ).substring ( 0, 3 );
-
-		console.info ( `\nFiles generated in ${execTime} seconds.` );
-
-		console.info ( '\ngtfs2mysql2json ended...\n\n' );
 	}
 }
 

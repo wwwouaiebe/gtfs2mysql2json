@@ -31,27 +31,6 @@ Changes:
 class Config {
 
 	/**
-	 * The path to the directory where the gtfs files are
-	 * @type {String}
-	 */
-
-	srcDir;
-
-	/**
-	 * The directory where the app is installed. Coming from the app parameter
-	 * @type {String}
-	 */
-
-	appDir;
-
-	/**
-	 * The name of the db to use
-	 * @type {String}
-	 */
-
-	dbName;
-
-	/**
 	 * Comng soon...
 	 * @type {Number}
 	 */
@@ -64,9 +43,7 @@ class Config {
 	 */
 
 	constructor ( ) {
-		this.srcDir = '';
-		this.appDir = '';
-		this.dbName = '';
+		this.network = '';
 	}
 
 }

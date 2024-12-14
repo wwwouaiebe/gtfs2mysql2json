@@ -26,7 +26,7 @@ import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 
 import mysql from 'mysql2';
-import theConfig from './Config.js';
+import theOperator from './Operator.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -95,7 +95,7 @@ class MySqlDb {
 			{
 				host : 'localhost',
 				user : this.#userName,
-				database : theConfig.dbName,
+				database : theOperator.mySqlDbName,
 				password : this.#userPswd
 			}
 		);

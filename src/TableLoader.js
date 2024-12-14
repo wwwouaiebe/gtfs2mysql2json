@@ -22,9 +22,9 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
-import theConfig from './Config.js';
 import fs from 'fs';
 import theMySqlDb from './MySqlDb.js';
+import theOperator from './Operator.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -142,7 +142,7 @@ class TableLoader {
 
 	#setInsertSqlStringHeader ( dataLine ) {
 		let fields = dataLine.split ( ',' );
-		this.#insertSqlStringHeader = ' INSERT INTO `' + theConfig.dbName + '`.`' + this.tableName + '` (';
+		this.#insertSqlStringHeader = ' INSERT INTO `' + theOperator.mySqlDbName + '`.`' + this.tableName + '` (';
 		fields.forEach (
 			field => {
 				this.#insertSqlStringHeader += '`' + field + '`, ';
@@ -230,7 +230,7 @@ class TableLoader {
 		this.#remainingData = '';
 
 		try {
-			fs.accessSync ( theConfig.srcDir + '/' + fileName );
+			fs.accessSync ( theOperator.gtfsDirectory + '/' + fileName );
 		}
 		catch {
 			console.info ( `\nFile ${fileName} not found` );
@@ -240,7 +240,7 @@ class TableLoader {
 		console.info ( `\nLoading of file ${fileName} started` );
 
 		let readableStream = fs.createReadStream (
-			theConfig.srcDir + '/' + fileName,
+			theOperator.gtfsDirectory + '/' + fileName,
 			{
 				encoding : 'utf8',
 				highWaterMark : TableLoader.HIGH_WATER_MARK
@@ -264,7 +264,7 @@ class TableLoader {
 		await theMySqlDb.execSql (
 			'DROP TABLE if EXISTS ' + this.tableName + ';'
 		);
-		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `' + theConfig.dbName + '`.`' + this.tableName + '` (';
+		let createTableSqlString = 'CREATE TABLE IF NOT EXISTS `' + theOperator.mySqlDbName + '`.`' + this.tableName + '` (';
 		let indexesString = '';
 		let primaryKey = null;
 		this.fieldsMap.forEach (

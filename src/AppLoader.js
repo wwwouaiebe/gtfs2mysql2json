@@ -24,7 +24,10 @@ Changes:
 
 import process from 'process';
 import theConfig from './Config.js';
+import theMySqlDb from './MySqlDb.js';
 import GtfsLoader from './GtfsLoader.js';
+import GtfsTreeBuilder from './GtfsTreeBuilder.js';
+import theOperator from './Operator.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
@@ -42,7 +45,7 @@ class AppLoader {
      * @type {String}
      */
 
-	static get #version ( ) { return 'v1.0.0'; }
+	static get #version ( ) { return 'v2.0.0'; }
 
 	/**
 	* Complete theConfig object from the app parameters
@@ -52,21 +55,12 @@ class AppLoader {
 	#createConfig ( options ) {
 
 		if ( options ) {
-			theConfig.srcDir = options.srcDir;
-			theConfig.dbName = options.dbName;
-			theConfig.appDir = process.cwd ( ) + '/node_modules/gtfs2mysql2json/src';
 		}
 		else {
 			process.argv.forEach (
 				arg => {
 					const argContent = arg.split ( '=' );
 					switch ( argContent [ 0 ] ) {
-					case '--srcDir' :
-						theConfig.srcDir = argContent [ 1 ];
-						break;
-					case '--dbName' :
-						theConfig.dbName = argContent [ 1 ];
-						break;
 					case '--version' :
 						console.error ( `\n\t\x1b[36mVersion : ${AppLoader.#version}\x1b[0m\n` );
 						process.exit ( 0 );
@@ -76,7 +70,6 @@ class AppLoader {
 					}
 				}
 			);
-			theConfig.appDir = process.argv [ 1 ];
 		}
 
 		// the config is now frozen
@@ -101,7 +94,31 @@ class AppLoader {
 		// config
 		this.#createConfig ( options );
 
-		new GtfsLoader ( ).start ( );
+		console.info ( '\nStarting gtfs2mysql2json ...\n\n' );
+		await theMySqlDb.start ( );
+
+		const startTime = process.hrtime.bigint ( );
+
+		// await new GtfsLoader ( ).start ( );
+
+		const gtfsTreeBuilder = new GtfsTreeBuilder ( );
+
+		for ( const network of theOperator.networks ) {
+			await gtfsTreeBuilder.build ( network );
+		}
+
+		await theMySqlDb.end ( );
+
+		// end of the process
+		const deltaTime = process.hrtime.bigint ( ) - startTime;
+
+		/* eslint-disable-next-line no-magic-numbers */
+		const execTime = String ( deltaTime / 1000000000n ) + '.' + String ( deltaTime % 1000000000n ).substring ( 0, 3 );
+
+		console.info ( `\nFiles generated in ${execTime} seconds.` );
+
+		console.info ( '\ngtfs2mysql2json ended...\n\n' );
+
 	}
 
 }
