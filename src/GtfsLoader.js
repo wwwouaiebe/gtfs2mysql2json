@@ -357,7 +357,7 @@ class GtfsLoader {
 	async start ( ) {
 		const startTime = process.hrtime.bigint ( );
 
-		console.info ( '\nStarting gtfs2mysql ...\n\n' );
+		console.info ( '\nStarting gtfs2mysql2json ...\n\n' );
 		await theMySqlDb.start ( );
 
 		theMySqlDb.execSql (
@@ -392,7 +392,7 @@ class GtfsLoader {
 
 		console.info ( `\nFiles generated in ${execTime} seconds.` );
 
-		console.info ( '\ngtfs2mysql ended...\n\n' );
+		console.info ( '\ngtfs2mysql2json ended...\n\n' );
 	}
 }
 

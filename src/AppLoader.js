@@ -54,7 +54,7 @@ class AppLoader {
 		if ( options ) {
 			theConfig.srcDir = options.srcDir;
 			theConfig.dbName = options.dbName;
-			theConfig.appDir = process.cwd ( ) + '/node_modules/gtfs2mysql/src';
+			theConfig.appDir = process.cwd ( ) + '/node_modules/gtfs2mysql2json/src';
 		}
 		else {
 			process.argv.forEach (

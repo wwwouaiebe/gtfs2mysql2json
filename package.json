@@ -1,6 +1,6 @@
 {
     "type": "module",
-    "name": "gtfs2mysql",
+    "name": "gtfs2mysql2json",
     "description": "Upload a gtfs feed into a mysql db",
     "main": "bin/index.js",
     "bin": {
@@ -20,20 +20,17 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/wwwouaiebe/gtfs2mysql.git"
+        "url": "git+https://github.com/wwwouaiebe/gtfs2mysql2json.git"
     },
     "engines": {
         "node": ">=20.9.0"
     },
     "scripts": {
         "debug": "node node_modules/grunt/bin/grunt",
-        "gtfs2mysql-delijn": "node ./src/index.js --srcDir=./gtfs/delijn --dbName=gtfs_delijn",
-        "gtfs2mysql-new": "node ./src/index.js --srcDir=./gtfs/stib --dbName=gtfs_new",
-        "gtfs2mysql-stib": "node ./src/index.js --srcDir=./gtfs/stib --dbName=gtfs_stib",
-        "gtfs2mysql-tec": "node ./src/index.js --srcDir=./gtfs/tec --dbName=gtfs_tec"
+        "gtfs2mysql2json-tec": "node ./src/index.js --srcDir=./gtfs/tec --dbName=gtfs_tec"
     },
     "author": "wwwouaiebe",
     "license": "GPL-3.0",
-    "sources": "https://github.com/wwwouaiebe/gtfs2mysql",
-    "homepage": "https://github.com/wwwouaiebe/gtfs2mysql#readme"
+    "sources": "https://github.com/wwwouaiebe/gtfs2mysql2json",
+    "homepage": "https://github.com/wwwouaiebe/gtfs2mysql2json#readme"
 }
