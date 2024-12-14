@@ -38,12 +38,13 @@ class Config {
 	// eslint-disable-next-line no-magic-numbers
 	commitCounter = 100000;
 
+	operatorFile = '';
+
 	/**
 	 * The constructor
 	 */
 
 	constructor ( ) {
-		this.network = '';
 	}
 
 }

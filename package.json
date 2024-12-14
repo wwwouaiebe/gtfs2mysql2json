@@ -27,7 +27,7 @@
     },
     "scripts": {
         "debug": "node node_modules/grunt/bin/grunt",
-        "gtfs2mysql2json-tec": "node ./src/index.js"
+        "gtfs2mysql2json-tec": "node ./src/index.js --operatorFile=tec.json"
     },
     "author": "wwwouaiebe",
     "license": "GPL-3.0",

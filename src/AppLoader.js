@@ -61,6 +61,9 @@ class AppLoader {
 				arg => {
 					const argContent = arg.split ( '=' );
 					switch ( argContent [ 0 ] ) {
+					case '--operatorFile' :
+						theConfig.operatorFile = argContent [ 1 ] || '';
+						break;
 					case '--version' :
 						console.error ( `\n\t\x1b[36mVersion : ${AppLoader.#version}\x1b[0m\n` );
 						process.exit ( 0 );
@@ -93,6 +96,7 @@ class AppLoader {
 
 		// config
 		this.#createConfig ( options );
+		await theOperator.loadData ( );
 
 		console.info ( '\nStarting gtfs2mysql2json ...\n\n' );
 		await theMySqlDb.start ( );
@@ -102,7 +106,6 @@ class AppLoader {
 		// await new GtfsLoader ( ).start ( );
 
 		const gtfsTreeBuilder = new GtfsTreeBuilder ( );
-
 		for ( const network of theOperator.networks ) {
 			await gtfsTreeBuilder.build ( network );
 		}
