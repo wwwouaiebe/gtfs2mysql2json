@@ -28,21 +28,21 @@ import PolylineEncoder from './PolylineEncoder.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
 /**
- * Coming soon
+ * Build a js object with all the necessary GTFS informations for OsmGtfsCompare
  */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
 class GtfsTreeBuilder {
 
 	/**
-     * Coming soon
+     * The network for witch the information is build
      * @type {Object}
      */
 
 	#network;
 
 	/**
-     * Coming soon
+     * The object with the GTFS information
      * @type {Object}
      */
 
@@ -52,23 +52,25 @@ class GtfsTreeBuilder {
 	};
 
 	/**
-     * Coming soon
+     * An object used to compress the GTFS data
      * @type {Object}
      */
 
 	#polylineEncoder;
 
 	/**
-     * Coming soon
-     * @type {Object}
-     */
-
-	/**
-     * Coming soon
+     * The current GTFS route master (= 1 record in the routes table)
      * @type {Object}
      */
 
 	#currentRouteMaster = {};
+
+	/**
+	 * A map with the platforms and routeRef
+	 * @type {Map}
+	 */
+
+	#platformsRoutesRefMap = new Map ( );
 
 	/**
      * Coming soon
@@ -111,7 +113,7 @@ class GtfsTreeBuilder {
 			nodes : '',
 			shapePk : shapePk.shapePk,
 			startDate : shapePk.minStartDate,
-			endDate : shapePk.minStartDate
+			endDate : shapePk.maxEndDate
 		};
 		for ( let platformsCounter = 0; platformsCounter < platforms.length; platformsCounter ++ ) {
 			let platform = platforms [ platformsCounter ];
@@ -167,6 +169,15 @@ class GtfsTreeBuilder {
 		}
 	}
 
+	/**
+	 * Compare 2 names for sorting.
+	 * Names are splited into a numeric and analphanumric part, the the numeric part is completed with
+	 * spaces on the left, then compared as string
+	 * @param {String} first The first name to compare
+	 * @param {String} second The second name to compare
+	 * @returns {Number} The result of the comparison. See String.localCompare ( )
+	 */
+
 	#compareRouteName ( first, second ) {
 
 		// split the name into the numeric part and the alphanumeric part:
@@ -187,23 +198,37 @@ class GtfsTreeBuilder {
 	}
 
 	/**
-     * Coming soon
+     * Select the routes in the GTFS data and buid the GTFS data for each route
      */
 
 	async #selectRoutesMaster ( ) {
+
+		// searching the data in the database
 		let routesMaster = await theMySqlDb.execSql (
 			'SELECT DISTINCT routes.route_short_name AS routeMasterRef, routes.route_type as routeMasterType FROM routes ' +
             'WHERE routes.agency_id = "' + this.#network.gtfsAgencyId + '";'
 		);
+
+		// sorting the routes
 		routesMaster.sort ( ( first, second ) => this.#compareRouteName ( first.routeMasterRef, second.routeMasterRef ) );
+
+		// loop on the routes
 		for ( let routesMasterCounter = 0; routesMasterCounter < routesMaster.length; routesMasterCounter ++ ) {
+
+			// Start building an object with GTFS data for the route
 			this.#currentRouteMaster = {
 				routeMasterRef : routesMaster [ routesMasterCounter ].routeMasterRef,
 				routeMasterType : Number.parseInt ( routesMaster [ routesMasterCounter ].routeMasterType ),
 				routes : []
 			};
+
+			// Adding the differents trips of the route
 			await this.#selectShapesPkForRouteMaster ( );
+
+			// Saving data
 			this.#gtfsTree.routesMaster.push ( this.#currentRouteMaster );
+
+			// User info
 			console.info (
 				'Creating json data for bus ' +
 				this.#currentRouteMaster.routeMasterRef +
@@ -257,21 +282,9 @@ class GtfsTreeBuilder {
 		return '???';
 	}
 
-	#platformsRoutesRefMap = new Map ( );
-
-	#addRouteRef ( routeMasterRef, platformId ) {
-
-		let platformRoutesRef = this.#platformsRoutesRefMap.get ( platformId );
-		if ( ! platformRoutesRef ) {
-			platformRoutesRef = {
-				platformId : platformId,
-				routesRef : new Map ( )
-			};
-			this.#platformsRoutesRefMap.set ( platformId, platformRoutesRef );
-		}
-
-		platformRoutesRef.routesRef.set ( routeMasterRef, routeMasterRef );
-	}
+	/**
+	 * Save the collection of platforms and routeRef to a file.
+	 */
 
 	#savePlatformsRoutesRefMap ( ) {
 		let platformsRoutesRefArray = [];
@@ -303,6 +316,30 @@ class GtfsTreeBuilder {
 		);
 	}
 
+	/**
+	 * Add a routeRef to a bus_stop
+	 * @param {String} routeMasterRef the routeRef to add
+	 * @param {String} platformId the bus_stop id
+	 */
+
+	#addRouteRef ( routeMasterRef, platformId ) {
+
+		let platformRoutesRef = this.#platformsRoutesRefMap.get ( platformId );
+		if ( ! platformRoutesRef ) {
+			platformRoutesRef = {
+				platformId : platformId,
+				routesRef : new Map ( )
+			};
+			this.#platformsRoutesRefMap.set ( platformId, platformRoutesRef );
+		}
+
+		platformRoutesRef.routesRef.set ( routeMasterRef, routeMasterRef );
+	}
+
+	/**
+	 * Build a collection of objects containing, for each bus_stop the routeRef associated
+	 */
+
 	#buildRouteRef ( ) {
 		this.#gtfsTree.routesMaster.forEach (
 			routeMaster => {
@@ -331,7 +368,8 @@ class GtfsTreeBuilder {
 	}
 
 	/**
-     * Coming soon
+     * Build an object containing the GTFS data for a network
+	 * @param {Object} network An onject as defined in the oprator.json file
      */
 
 	async build ( network ) {
