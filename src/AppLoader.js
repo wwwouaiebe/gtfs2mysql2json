@@ -45,7 +45,7 @@ class AppLoader {
      * @type {String}
      */
 
-	static get #version ( ) { return 'v2.0.0'; }
+	static get #version ( ) { return 'v1.0.0'; }
 
 	/**
 	* Complete theConfig object from the app parameters
