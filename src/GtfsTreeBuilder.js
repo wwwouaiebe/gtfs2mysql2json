@@ -109,16 +109,23 @@ class GtfsTreeBuilder {
             'ORDER BY stop_times.stop_sequence;'
 		);
 		let route = {
+			name : '',
 			platforms : [],
+			from : '',
+			to : '',
+			platformsString : '',
 			nodes : '',
 			shapePk : shapePk.shapePk,
 			startDate : shapePk.minStartDate,
-			endDate : shapePk.maxEndDate
+			endDate : shapePk.maxEndDate,
+			osmRouteMaster : false,
+			platformNames : null
 		};
 		for ( let platformsCounter = 0; platformsCounter < platforms.length; platformsCounter ++ ) {
 			let platform = platforms [ platformsCounter ];
 			route.platforms.push (
 				{
+					gtfsStopId : platform.platformId,
 					id : platform.platformId,
 					name : platform.platformName,
 					lat : Number.parseFloat ( platform.platformLat ),
@@ -157,7 +164,7 @@ class GtfsTreeBuilder {
 						'ON ((trips.service_pk = calendar.service_pk)) ' +
 					') ' +
 					'WHERE routes.agency_id = "' + this.#network.gtfsAgencyId + '" ' +
-					'AND routes.route_short_name ="' + this.#currentRouteMaster.routeMasterRef + '" ' +
+					'AND routes.route_short_name ="' + this.#currentRouteMaster.ref + '" ' +
 				')  t ' +
 				'GROUP BY ' +
 				'shapePk ' +
@@ -165,6 +172,7 @@ class GtfsTreeBuilder {
 		);
 
 		for ( let shapesPkCounter = 0; shapesPkCounter < shapesPk.length; shapesPkCounter ++ ) {
+
 			await this.#selectPlatformsForShape ( shapesPk [ shapesPkCounter ] );
 		}
 	}
@@ -205,8 +213,13 @@ class GtfsTreeBuilder {
 
 		// searching the data in the database
 		let routesMaster = await theMySqlDb.execSql (
-			'SELECT DISTINCT routes.route_short_name AS routeMasterRef, routes.route_type as routeMasterType FROM routes ' +
-            'WHERE routes.agency_id = "' + this.#network.gtfsAgencyId + '";'
+			'SELECT DISTINCT ' +
+			'routes.route_short_name AS routeMasterRef, ' +
+			'routes.route_long_name AS routeMasterDescription, ' +
+			'routes.route_type as routeMasterType ' +
+			'FROM routes ' +
+            'WHERE routes.agency_id = "' + this.#network.gtfsAgencyId +
+			'" AND routes.route_id like "' + this.#network.idPrefix + '%";'
 		);
 
 		// sorting the routes
@@ -217,9 +230,11 @@ class GtfsTreeBuilder {
 
 			// Start building an object with GTFS data for the route
 			this.#currentRouteMaster = {
-				routeMasterRef : routesMaster [ routesMasterCounter ].routeMasterRef,
-				routeMasterType : Number.parseInt ( routesMaster [ routesMasterCounter ].routeMasterType ),
-				routes : []
+				description : routesMaster [ routesMasterCounter ].routeMasterDescription,
+				ref : routesMaster [ routesMasterCounter ].routeMasterRef,
+				type : Number.parseInt ( routesMaster [ routesMasterCounter ].routeMasterType ),
+				routes : [],
+				osmRouteMaster : null
 			};
 
 			// Adding the differents trips of the route
@@ -231,7 +246,7 @@ class GtfsTreeBuilder {
 			// User info
 			console.info (
 				'Creating json data for bus ' +
-				this.#currentRouteMaster.routeMasterRef +
+				this.#currentRouteMaster.ref +
 				' of network ' + this.#network.osmNetwork
 			);
 		}
