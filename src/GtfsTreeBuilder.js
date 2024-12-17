@@ -164,6 +164,7 @@ class GtfsTreeBuilder {
 						'ON ((trips.service_pk = calendar.service_pk)) ' +
 					') ' +
 					'WHERE routes.agency_id = "' + this.#network.gtfsAgencyId + '" ' +
+					'AND routes.route_id like "' + this.#network.idPrefix + '%"' +
 					'AND routes.route_short_name ="' + this.#currentRouteMaster.ref + '" ' +
 				')  t ' +
 				'GROUP BY ' +
