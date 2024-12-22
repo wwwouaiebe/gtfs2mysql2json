@@ -103,7 +103,7 @@ class AppLoader {
 
 		const startTime = process.hrtime.bigint ( );
 
-		// await new GtfsLoader ( ).start ( );
+		await new GtfsLoader ( ).start ( );
 
 		const gtfsTreeBuilder = new GtfsTreeBuilder ( );
 		for ( const network of theOperator.networks ) {
