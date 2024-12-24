@@ -121,17 +121,21 @@ class GtfsTreeBuilder {
 			osmRouteMaster : false,
 			platformNames : null
 		};
+		let previousPlatformId = '';
 		for ( let platformsCounter = 0; platformsCounter < platforms.length; platformsCounter ++ ) {
 			let platform = platforms [ platformsCounter ];
-			route.platforms.push (
-				{
-					gtfsStopId : platform.platformId,
-					id : platform.platformId,
-					name : platform.platformName,
-					lat : Number.parseFloat ( platform.platformLat ),
-					lon : Number.parseFloat ( platform.platformLon )
-				}
-			);
+			if ( previousPlatformId !== platform.platformId ) {
+				route.platforms.push (
+					{
+						gtfsStopId : platform.platformId,
+						id : platform.platformId,
+						name : platform.platformName,
+						lat : Number.parseFloat ( platform.platformLat ),
+						lon : Number.parseFloat ( platform.platformLon )
+					}
+				);
+				previousPlatformId = platform.platformId;
+			}
 		}
 		route.nodes = await this.#getNodes ( shapePk.shapePk );
 		this.#currentRouteMaster.routes.push ( route );
