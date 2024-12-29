@@ -170,6 +170,7 @@ class GtfsTreeBuilder {
 					'WHERE routes.agency_id = "' + this.#network.gtfsAgencyId + '" ' +
 					'AND routes.route_id like "' + this.#network.idPrefix + '%"' +
 					'AND routes.route_short_name ="' + this.#currentRouteMaster.ref + '" ' +
+					'AND routes.route_long_name = "' + this.#currentRouteMaster.description + '" ' +
 				')  t ' +
 				'GROUP BY ' +
 				'shapePk ' +
@@ -312,12 +313,16 @@ class GtfsTreeBuilder {
 			platformRoutesRef => {
 				let routesRefArray = [];
 				platformRoutesRef.routesRef.forEach (
-					routeRef => routesRefArray.push ( routeRef )
+					routeRef => {
+						routesRefArray.push ( routeRef );
+					}
 				);
 				routesRefArray.sort ( this.#compareRouteName );
 				let routesRefString = '';
 				routesRefArray.forEach (
-					routeRef => routesRefString += routeRef + ';'
+					routeRef => {
+						routesRefString += routeRef + ';';
+					}
 				);
 				platformsRoutesRefArray.push (
 					{
@@ -367,7 +372,7 @@ class GtfsTreeBuilder {
 					route => {
 						route.platforms.forEach (
 							platform => {
-								this.#addRouteRef ( routeMaster.routeMasterRef, platform.id );
+								this.#addRouteRef ( routeMaster.ref, platform.id );
 							}
 
 						);

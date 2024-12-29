@@ -2,3 +2,4 @@ node_modules/
 gtfs/
 tmp/
 json/
+upload.bat
