@@ -105,9 +105,8 @@ class AppLoader {
 
 		await new GtfsLoader ( ).start ( );
 
-		const gtfsTreeBuilder = new GtfsTreeBuilder ( );
 		for ( const network of theOperator.networks ) {
-			await gtfsTreeBuilder.build ( network );
+			await new GtfsTreeBuilder ( ).build ( network );
 		}
 
 		await theMySqlDb.end ( );

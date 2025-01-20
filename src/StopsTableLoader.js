@@ -22,6 +22,7 @@ Changes:
 */
 /* ------------------------------------------------------------------------------------------------------------------------- */
 
+import theOperator from './Operator.js';
 import TableLoader from './TableLoader.js';
 
 /* ------------------------------------------------------------------------------------------------------------------------- */
@@ -166,6 +167,20 @@ class StopsTableLoader extends TableLoader {
 				length : TableLoader.VARCHAR_LENGHT_64
 			}
 		);
+
+		theOperator.networks.forEach (
+			network => {
+				this.fieldsMap.set (
+					'route_ref_' + network.osmNetwork,
+					{
+						name : 'route_ref_' + network.osmNetwork,
+						type : 'varchar',
+						length : TableLoader.VARCHAR_LENGHT_256
+					}
+				);
+			}
+		);
+
 		Object.freeze ( this );
 	}
 

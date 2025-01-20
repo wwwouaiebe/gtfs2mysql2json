@@ -307,7 +307,7 @@ class GtfsTreeBuilder {
 	 * Save the collection of platforms and routeRef to a file.
 	 */
 
-	#savePlatformsRoutesRefMap ( ) {
+	async #savePlatformsRoutesRefMap ( ) {
 		let platformsRoutesRefArray = [];
 		this.#platformsRoutesRefMap.forEach (
 			platformRoutesRef => {
@@ -335,6 +335,25 @@ class GtfsTreeBuilder {
 		platformsRoutesRefArray.sort (
 			( first, second ) => first.platformId.localeCompare ( second.platformId )
 		);
+
+		/*
+		ALTER TABLE `stops` ADD `route_ref_TECB` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
+		NULL DEFAULT NULL AFTER `route_ref_TECL`, ADD `route_ref_TECC` VARCHAR(256) CHARACTER SET
+		utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL AFTER `route_ref_TECB`, ADD `route_ref_TECH`
+		VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL AFTER `route_ref_TECC`,
+		ADD `route_ref_TECN` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL AFTER
+		`route_ref_TECH`, ADD `route_ref_TECX` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL
+		DEFAULT NULL AFTER `route_ref_TECN`;
+		*/
+
+		for ( const platformRouteRef of platformsRoutesRefArray ) {
+			await theMySqlDb.execSql (
+				'update stops set route_ref_' + this.#network.osmNetwork +
+				' =  "' + platformRouteRef.routesRef + '" where stop_id = "' +
+				platformRouteRef.platformId + '";'
+			);
+		}
+
 		fs.writeFileSync (
 			'./json/routeRef-' + this.#network.osmNetwork + '.json',
 			JSON.stringify ( platformsRoutesRefArray, null, 4 )
@@ -365,7 +384,7 @@ class GtfsTreeBuilder {
 	 * Build a collection of objects containing, for each bus_stop the routeRef associated
 	 */
 
-	#buildRouteRef ( ) {
+	async #buildRouteRef ( ) {
 		this.#gtfsTree.routesMaster.forEach (
 			routeMaster => {
 				routeMaster.routes.forEach (
@@ -380,7 +399,7 @@ class GtfsTreeBuilder {
 				);
 			}
 		);
-		this.#savePlatformsRoutesRefMap ( );
+		await this.#savePlatformsRoutesRefMap ( );
 	}
 
 	/**
@@ -399,12 +418,13 @@ class GtfsTreeBuilder {
 
 	async build ( network ) {
 		this.#network = network;
+		this.#platformsRoutesRefMap.clear ( );
 		this.#gtfsTree.routesMaster = [];
 		this.#gtfsTree.startDate = await this.#getStartDate ( );
 		await this.#selectRoutesMaster ( );
 		this.#removeDuplicateRoutes ( );
 		fs.writeFileSync ( './json/gtfs-' + this.#network.osmNetwork + '.json', JSON.stringify ( this.#gtfsTree ) );
-		this.#buildRouteRef ( );
+		await this.#buildRouteRef ( );
  	}
 
 }
