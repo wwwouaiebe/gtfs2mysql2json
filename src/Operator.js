@@ -15,10 +15,9 @@ class Operator {
 	get networks ( ) { return this.#jsonOperator.networks; }
 
 	async loadData ( ) {
-		const jsonOperator = await import (
-			'../operators/' + theConfig.operatorFile,
-			{ assert : { type : 'json' } }
-		);
+
+		const jsonOperator = await import ( '../operators/' + theConfig.operatorFile, { with : { type : 'json' } } );
+
 		this.#jsonOperator = jsonOperator.default;
 	}
 

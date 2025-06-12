@@ -389,12 +389,13 @@ class GtfsTreeBuilder {
 			routeMaster => {
 				routeMaster.routes.forEach (
 					route => {
-						route.platforms.forEach (
-							platform => {
-								this.#addRouteRef ( routeMaster.ref, platform.id );
-							}
-
-						);
+						if ( new Date ( route.endDate ).valueOf ( ) > new Date ( '2025-04-28' ).valueOf ( ) ) {
+							route.platforms.forEach (
+								platform => {
+									this.#addRouteRef ( routeMaster.ref, platform.id );
+								}
+							);
+						}
 					}
 				);
 			}
